@@ -2579,6 +2579,16 @@
             if (el) el.addEventListener(event, handler);
         }
 
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
+
+        function safeSetHtml(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
+
         function formatAstronomicalNumber(num) {
             if (num === null || num === undefined || isNaN(num)) return "0";
             if (num < 10000) return Math.floor(num).toLocaleString();
