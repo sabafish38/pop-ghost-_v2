@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ポップゴースト！ - ゆるかわ出現放置ゲーム</title>
+    <link rel="canonical" href="https://pop-ghost.com/">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
@@ -853,6 +854,10 @@
                     📘 あそびかたガイドをもう一度見る
                 </button>
 
+                <button id="btn-settings-privacy" class="doodle-button w-full py-1.5 mb-2 bg-amber-50 hover:bg-amber-100 text-stone-800 font-extrabold text-[11px] border border-amber-300 flex items-center justify-center gap-1 cursor-pointer">
+                    <span>📜</span><span id="txt-settings-privacy">プライバシーポリシー & お問い合わせ</span>
+                </button>
+
                 <button id="btn-settings-reset-data" class="doodle-button w-full py-1.5 mb-3 bg-rose-100 hover:bg-rose-200 text-rose-800 font-extrabold text-[10.5px] border border-rose-300">
                     🗑️ セーブデータを完全消去して初めから遊ぶ
                 </button>
@@ -860,6 +865,75 @@
                 <button id="btn-settings-ok" class="doodle-button w-full py-2 bg-amber-300 hover:bg-amber-400 text-stone-900 font-extrabold text-xs">
                     完了
                 </button>
+            </div>
+        </div>
+
+        <!-- モーダル: プライバシーポリシー & お問い合わせ (Google AdSense適合) -->
+        <div id="modal-privacy-policy" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-3 sm:p-4">
+            <div class="doodle-box w-full max-w-sm sm:max-w-md p-4 bg-[#fdfbf7] flex flex-col max-h-[86dvh] overflow-hidden">
+                <div class="flex justify-between items-center border-b-2 border-stone-800 pb-2 mb-2.5 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-base">📜</span>
+                        <h2 class="text-xs sm:text-sm font-extrabold text-stone-900">プライバシーポリシー & お問い合わせ</h2>
+                    </div>
+                    <button id="btn-privacy-close" class="text-stone-500 hover:text-stone-900 font-extrabold text-base px-2">✕</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto space-y-2.5 text-[11px] sm:text-xs text-stone-800 leading-relaxed pr-1 no-scrollbar">
+                    <div class="bg-white p-2.5 rounded-lg border border-stone-300">
+                        <h3 class="font-extrabold text-stone-900 mb-1 flex items-center gap-1"><span>📢</span> 広告の配信について (Google AdSense)</h3>
+                        <p class="text-stone-600 text-[10.5px]">
+                            当ゲームでは、第三者配信事業者（Google AdSense等）の広告サービスを利用しています。<br>
+                            広告配信事業者は、利用者の興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。<br>
+                            パーソナライズ広告の無効化は<a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-bold">Google広告設定</a>または<a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-bold">aboutads.info</a>から設定可能です。詳細な規約は<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-bold">Googleポリシーと規約</a>をご確認ください。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-lg border border-stone-300">
+                        <h3 class="font-extrabold text-stone-900 mb-1 flex items-center gap-1"><span>📊</span> アクセス解析 (Google Analytics)</h3>
+                        <p class="text-stone-600 text-[10.5px]">
+                            当ゲームでは利用状況の統計的把握のため「Googleアナリティクス (GA4)」を利用しています。トラフィックデータはCookieにより匿名で収集され、個人を特定する情報は一切含まれません。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-lg border border-stone-300">
+                        <h3 class="font-extrabold text-stone-900 mb-1 flex items-center gap-1"><span>💾</span> セーブデータ保存 (LocalStorage)</h3>
+                        <p class="text-stone-600 text-[10.5px]">
+                            所持おばけ玉、図鑑解放状況、キャッチャー強化などのゲーム進行データは、お使いのブラウザ内（ローカルストレージ）にのみ保存されます。外部サーバーへの送信・保管は一切行われません。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-2.5 rounded-lg border border-stone-300">
+                        <h3 class="font-extrabold text-stone-900 mb-1 flex items-center gap-1"><span>⚖️</span> 免責事項・著作権</h3>
+                        <p class="text-stone-600 text-[10.5px]">
+                            当ゲームの利用により生じたいかなる損害についても制作者は一切の責任を負いかねます。ゲーム内のキャラクター画像、音声、プログラムコードの著作権は制作者に帰属し、無断転載・再配布を禁じます。
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-300">
+                        <h3 class="font-extrabold text-amber-950 mb-1 flex items-center gap-1"><span>✉️</span> お問い合わせ窓口・運営者</h3>
+                        <p class="text-stone-700 text-[10.5px] mb-1.5">
+                            不具合のご報告、ご意見、ご要望、その他お問い合わせは下記までお寄せください。
+                        </p>
+                        <div class="text-[10px] font-bold text-stone-800 space-y-0.5">
+                            <div>運営：ポップゴースト！ 運営チーム (sabafish38)</div>
+                            <div>メール：<a href="mailto:sabafish.dev@gmail.com" class="text-blue-600 underline font-extrabold">sabafish.dev@gmail.com</a></div>
+                            <div>GitHub：<a href="https://github.com/sabafish38/pop-ghost-_v2" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-extrabold">pop-ghost-_v2</a></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-1">
+                        <a href="./privacy.html" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-blue-600 underline font-extrabold">
+                            <span>📄</span><span>ブラウザで規約ページ全文を開く ➔</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pt-2.5 shrink-0 border-t border-stone-200 mt-2">
+                    <button id="btn-privacy-ok" class="doodle-button w-full py-2 bg-amber-300 hover:bg-amber-400 text-stone-900 font-extrabold text-xs">
+                        閉じる
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -7241,9 +7315,29 @@
             }
         }
 
+        function openPrivacyModal() {
+            initAudio();
+            const modal = document.getElementById('modal-privacy-policy');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closePrivacyModal() {
+            const modal = document.getElementById('modal-privacy-policy');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
         safeAddListener('btn-settings', 'click', openSettingsModal);
         safeAddListener('btn-settings-close', 'click', closeSettingsModal);
         safeAddListener('btn-settings-ok', 'click', closeSettingsModal);
+        safeAddListener('btn-settings-privacy', 'click', openPrivacyModal);
+        safeAddListener('btn-privacy-close', 'click', closePrivacyModal);
+        safeAddListener('btn-privacy-ok', 'click', closePrivacyModal);
                 function resetAllGameData() {
             const lang = state.language || 'ja';
             const msg = (typeof RESET_CONFIRM !== 'undefined' && RESET_CONFIRM[lang]) ? RESET_CONFIRM[lang] : "セーブデータをすべてリセットしますか？\n（この操作は取り消せません）";
@@ -11521,6 +11615,8 @@ function openArcadeModal() {
         window.isRoomHiddenByModal = isRoomHiddenByModal;
         window.dropSpriteCache = dropSpriteCache;
         window.getTotalGhostsInRoom = getTotalGhostsInRoom;
+        window.openPrivacyModal = openPrivacyModal;
+        window.closePrivacyModal = closePrivacyModal;
     })();
     </script>
 </body>
