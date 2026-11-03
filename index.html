@@ -341,6 +341,7 @@
             pointer-events: none;
             transform-origin: center center;
             contain: layout style;
+            will-change: transform;
         }
         .ghost-img {
             width: 100%;
@@ -4716,7 +4717,14 @@
         }
 
         function getActiveGhosts() { return ghostPool.filter(g => g.active); }
-        function getTotalGhostsInRoom() { return ghostPool.reduce((sum, g) => sum + (g.active ? g.stackCount : 0), 0); }
+        function getTotalGhostsInRoom() {
+            let sum = 0;
+            for (let i = 0; i < ghostPool.length; i++) {
+                const g = ghostPool[i];
+                if (g.active) sum += g.stackCount;
+            }
+            return sum;
+        }
 
         function getActiveCalendarGhosts() {
             const curDay = getCurrentDay();
@@ -4903,11 +4911,14 @@
         }
 
         function collectGhostsAt(x, y, radius, multiplier = 1.0) {
-            const active = getActiveGhosts();
             let collectedCount = 0;
-            for (let i = active.length - 1; i >= 0; i--) {
-                const g = active[i];
-                if (Math.hypot(g.x - x, g.y - y) <= radius + g.radius) {
+            for (let i = ghostPool.length - 1; i >= 0; i--) {
+                const g = ghostPool[i];
+                if (!g.active) continue;
+                const totalR = radius + g.radius;
+                const dx = g.x - x;
+                const dy = g.y - y;
+                if (dx * dx + dy * dy <= totalR * totalR) {
                     collectGhostInstance(g, multiplier, true);
                     collectedCount++;
                 }
@@ -5421,6 +5432,7 @@
             ch = container.clientHeight;
             canvas.width = cw;
             canvas.height = ch;
+            if (typeof updateCanvasRect === 'function') updateCanvasRect();
             if (state.roombaObj) {
                 const scale = getScreenScaleFactor();
                 const boundRadius = Math.round(40 * scale);
@@ -5448,11 +5460,15 @@
             if (t) t.style.opacity = '0';
         }
 
+        let cachedCanvasRect = null;
+        function updateCanvasRect() {
+            if (canvas) cachedCanvasRect = canvas.getBoundingClientRect();
+        }
         function handlePointerMove(cx, cy) { 
             dismissTutorialToast();
-            const rect = canvas.getBoundingClientRect(); 
-            pointerPos.x = cx - rect.left; 
-            pointerPos.y = cy - rect.top; 
+            if (!cachedCanvasRect) updateCanvasRect();
+            pointerPos.x = cx - cachedCanvasRect.left; 
+            pointerPos.y = cy - cachedCanvasRect.top; 
             collectGhostsAt(pointerPos.x, pointerPos.y, getSwipeRadius(), 1.0); 
         }
         
@@ -9221,6 +9237,25 @@ function openArcadeModal() {
         }
 
         // --- 描画ループ ---
+        const dropSpriteCache = {};
+        function getDropGhostSprite(def) {
+            if (!dropSpriteCache[def.level]) {
+                const r = def.radius;
+                const pad = Math.ceil(r * 0.45);
+                const size = Math.ceil((r + pad) * 2);
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = size;
+                offCanvas.height = size;
+                const ox = offCanvas.getContext('2d');
+                ox.save();
+                ox.translate(size / 2, size / 2);
+                drawSingleDropGhostRaw(ox, def);
+                ox.restore();
+                dropSpriteCache[def.level] = { canvas: offCanvas, half: size / 2 };
+            }
+            return dropSpriteCache[def.level];
+        }
+
         function renderDropGame() {
             if (!dropCtx) return;
             dropCtx.clearRect(0, 0, dropWidth, dropHeight);
@@ -9246,15 +9281,17 @@ function openArcadeModal() {
             }
 
             // 2. 箱の中のオバケたち
-            dropGhosts.forEach(g => {
+            for (let i = 0; i < dropGhosts.length; i++) {
+                const g = dropGhosts[i];
                 const def = DROP_GHOST_TYPES[g.level];
                 if (def) {
                     drawSingleDropGhost(dropCtx, g.x, g.y, def, g.scale);
                 }
-            });
+            }
 
             // 3. パーティクル
-            dropParticles.forEach(p => {
+            for (let i = 0; i < dropParticles.length; i++) {
+                const p = dropParticles[i];
                 dropCtx.save();
                 dropCtx.globalAlpha = Math.max(0, p.alpha);
                 dropCtx.fillStyle = p.color;
@@ -9262,14 +9299,23 @@ function openArcadeModal() {
                 dropCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 dropCtx.fill();
                 dropCtx.restore();
-            });
+            }
         }
 
         function drawSingleDropGhost(ctx, x, y, def, scale = 1.0) {
-            ctx.save();
-            ctx.translate(x, y);
-            if (scale !== 1.0) ctx.scale(scale, scale);
+            const spr = getDropGhostSprite(def);
+            if (scale === 1.0) {
+                ctx.drawImage(spr.canvas, x - spr.half, y - spr.half);
+            } else {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(scale, scale);
+                ctx.drawImage(spr.canvas, -spr.half, -spr.half);
+                ctx.restore();
+            }
+        }
 
+        function drawSingleDropGhostRaw(ctx, def) {
             const r = def.radius;
 
             // 影
@@ -9336,8 +9382,6 @@ function openArcadeModal() {
                 ctx.textBaseline = 'middle';
                 ctx.fillText(def.icon, 0, -r * 0.56);
             }
-
-            ctx.restore();
         }
 
         function dropGameLoop(timestamp) {
@@ -10450,6 +10494,19 @@ function openArcadeModal() {
             return c;
         }
 
+        let cachedFastBanner = null;
+        let cachedEcoBanner = null;
+        let lastDailyCheckTime = 0;
+
+        function isRoomHiddenByModal() {
+            const mIds = ['modal-drop-game', 'modal-fish-game', 'modal-whack-game', 'modal-slot-game', 'modal-dex', 'modal-shop', 'modal-catcher-upgrade', 'modal-settings'];
+            for (let i = 0; i < mIds.length; i++) {
+                const el = document.getElementById(mIds[i]);
+                if (el && !el.classList.contains('hidden')) return true;
+            }
+            return false;
+        }
+
         function gameLoop() {
             if (document.hidden) {
                 // バックグラウンド時は無駄なCanvas描画・DOM更新を完全休止（超省電力化）
@@ -10491,7 +10548,10 @@ function openArcadeModal() {
                 }
 
                 if (state.hasRoomba) {
-                    checkDailyBatteryReset();
+                    if (now - lastDailyCheckTime >= 1000) {
+                        lastDailyCheckTime = now;
+                        checkDailyBatteryReset();
+                    }
 
                     if (state.roombaActive && state.batteryHighPowerLeft > 0) {
                         state.batteryHighPowerLeft = Math.max(0, state.batteryHighPowerLeft - dt);
@@ -10500,16 +10560,16 @@ function openArcadeModal() {
                             const tt = formatHoursMinutesSeconds(state.batteryHighPowerLeft);
                             if (tt !== lastTimerTxtFast) { lastTimerTxtFast = tt; cachedFastBatteryTimer.textContent = tt; }
                         }
-                        const fastBanner = document.getElementById('fast-battery-banner');
-                        if (fastBanner && fastBanner.classList.contains('hidden')) fastBanner.classList.remove('hidden');
-                        const ecoBanner = document.getElementById('eco-battery-banner');
-                        if (ecoBanner && !ecoBanner.classList.contains('hidden')) ecoBanner.classList.add('hidden');
+                        if (!cachedFastBanner) cachedFastBanner = document.getElementById('fast-battery-banner');
+                        if (cachedFastBanner && cachedFastBanner.classList.contains('hidden')) cachedFastBanner.classList.remove('hidden');
+                        if (!cachedEcoBanner) cachedEcoBanner = document.getElementById('eco-battery-banner');
+                        if (cachedEcoBanner && !cachedEcoBanner.classList.contains('hidden')) cachedEcoBanner.classList.add('hidden');
                     } else if (state.hasRoomba && state.batteryHighPowerLeft <= 0 && state.chargedTimeLeft <= 0) {
                         // バッテリー切れ停止
-                        const fastBanner = document.getElementById('fast-battery-banner');
-                        if (fastBanner && !fastBanner.classList.contains('hidden')) fastBanner.classList.add('hidden');
-                        const ecoBanner = document.getElementById('eco-battery-banner');
-                        if (ecoBanner && ecoBanner.classList.contains('hidden')) ecoBanner.classList.remove('hidden');
+                        if (!cachedFastBanner) cachedFastBanner = document.getElementById('fast-battery-banner');
+                        if (cachedFastBanner && !cachedFastBanner.classList.contains('hidden')) cachedFastBanner.classList.add('hidden');
+                        if (!cachedEcoBanner) cachedEcoBanner = document.getElementById('eco-battery-banner');
+                        if (cachedEcoBanner && cachedEcoBanner.classList.contains('hidden')) cachedEcoBanner.classList.remove('hidden');
                     }
                 }
 
@@ -10547,157 +10607,162 @@ function openArcadeModal() {
                     updateUI();
                 }
 
-                const active = getActiveGhosts();
-                for (let i = 0; i < active.length; i++) {
-                    const g = active[i];
-                    if (g.scale < 1) g.scale += (1 - g.scale) * (1 - Math.pow(0.75, fs));
-                    g.wobbleOffset += g.wobbleSpeed * fs;
+                const isRoomHidden = isRoomHiddenByModal();
+                if (!isRoomHidden) {
+                    for (let i = 0; i < ghostPool.length; i++) {
+                        const g = ghostPool[i];
+                        if (!g.active) continue;
+                        if (g.scale < 1) g.scale += (1 - g.scale) * (1 - Math.pow(0.75, fs));
+                        g.wobbleOffset += g.wobbleSpeed * fs;
 
-                    if (g.isMilestone) {
-                        // 記念おばけは中央に緩やかに留まりほとんど動かない
-                        const targetCenterX = cw / 2;
-                        const targetCenterY = ch / 2;
-                        const pull = 1 - Math.pow(0.96, fs);
-                        g.x += (targetCenterX - g.x) * pull;
-                        g.y += (targetCenterY - g.y) * pull;
-                        const damp = Math.pow(0.8, fs);
-                        g.vx *= damp;
-                        g.vy *= damp;
-                    } else {
-                        if (Math.random() < 0.03 * fs) { g.vx += (Math.random() - 0.5) * 0.8; g.vy += (Math.random() - 0.5) * 0.8; }
-                        const maxSpeed = g.isBaby ? 2.4 : 1.6;
-                        const speed = Math.hypot(g.vx, g.vy);
-                        if (speed > maxSpeed) { g.vx = (g.vx / speed) * maxSpeed; g.vy = (g.vy / speed) * maxSpeed; }
-                        g.x += g.vx * fs; g.y += g.vy * fs;
-                        if (Math.abs(g.vx) > 0.2) g.facing = g.vx >= 0 ? 1 : -1;
-                        const margin = g.radius + 8;
-                        if (g.x < margin) { g.x = margin; g.vx *= -1; } if (g.x > cw - margin) { g.x = cw - margin; g.vx *= -1; }
-                        if (g.y < margin) { g.y = margin; g.vy *= -1; } if (g.y > ch - margin) { g.y = ch - margin; g.vy *= -1; }
+                        if (g.isMilestone) {
+                            // 記念おばけは中央に緩やかに留まりほとんど動かない
+                            const targetCenterX = cw / 2;
+                            const targetCenterY = ch / 2;
+                            const pull = 1 - Math.pow(0.96, fs);
+                            g.x += (targetCenterX - g.x) * pull;
+                            g.y += (targetCenterY - g.y) * pull;
+                            const damp = Math.pow(0.8, fs);
+                            g.vx *= damp;
+                            g.vy *= damp;
+                        } else {
+                            if (Math.random() < 0.03 * fs) { g.vx += (Math.random() - 0.5) * 0.8; g.vy += (Math.random() - 0.5) * 0.8; }
+                            const maxSpeed = g.isBaby ? 2.4 : 1.6;
+                            const speed = Math.hypot(g.vx, g.vy);
+                            if (speed > maxSpeed) { g.vx = (g.vx / speed) * maxSpeed; g.vy = (g.vy / speed) * maxSpeed; }
+                            g.x += g.vx * fs; g.y += g.vy * fs;
+                            if (Math.abs(g.vx) > 0.2) g.facing = g.vx >= 0 ? 1 : -1;
+                            const margin = g.radius + 8;
+                            if (g.x < margin) { g.x = margin; g.vx *= -1; } if (g.x > cw - margin) { g.x = cw - margin; g.vx *= -1; }
+                            if (g.y < margin) { g.y = margin; g.vy *= -1; } if (g.y > ch - margin) { g.y = ch - margin; g.vy *= -1; }
+                        }
+
+                        const stretchX = 1 + Math.sin(g.wobbleOffset) * 0.06, stretchY = 1 + Math.cos(g.wobbleOffset) * 0.06;
+                        const baseScale = g.isMilestone ? 3.0 : (g.isBaby ? 0.65 : 1.0);
+                        const stackScale = 1 + Math.min(0.25, Math.log10(Math.max(1, g.stackCount)) * 0.07);
+                        const scaleTotal = g.scale * baseScale * stackScale;
+                        if (g.lastFacing !== g.facing) {
+                            g.img.style.transform = g.facing === -1 ? 'scaleX(-1)' : 'none';
+                            g.lastFacing = g.facing;
+                        }
+                        g.el.style.transform = `translate3d(${g.x - 28}px, ${g.y - 28}px, 0) scale(${scaleTotal * stretchX}, ${scaleTotal * stretchY})`;
                     }
 
-                    const stretchX = 1 + Math.sin(g.wobbleOffset) * 0.06, stretchY = 1 + Math.cos(g.wobbleOffset) * 0.06;
-                    const baseScale = g.isMilestone ? 3.0 : (g.isBaby ? 0.65 : 1.0);
-                    const stackScale = 1 + Math.min(0.25, Math.log10(Math.max(1, g.stackCount)) * 0.07);
-                    const scaleTotal = g.scale * baseScale * stackScale;
-                    if (g.lastFacing !== g.facing) {
-                        g.img.style.transform = g.facing === -1 ? 'scaleX(-1)' : 'none';
-                        g.lastFacing = g.facing;
-                    }
-                    g.el.style.transform = `translate3d(${g.x - 28}px, ${g.y - 28}px, 0) scale(${scaleTotal * stretchX}, ${scaleTotal * stretchY})`;
-                }
+                    // キャッチャー自動回収（バッテリーまたはチャージがある時のみ稼働）
+                    const isCatcherActive = (state.hasRoomba && state.roombaActive && (state.batteryHighPowerLeft > 0 || state.chargedTimeLeft > 0)) || (!state.hasRoomba && state.chargedTimeLeft > 0);
+                    if (isCatcherActive) {
+                        const rb = state.roombaObj;
+                        const spdLevel = state.lvlRoombaSpeed;
+                        
+                        if (state.catcherComboTimer > 0) {
+                            state.catcherComboTimer -= dt;
+                            if (state.catcherComboTimer <= 0) {
+                                state.catcherCombo = 0;
+                                state.catcherComboMultiplier = 1.0;
+                            }
+                        }
 
-                // キャッチャー自動回収（バッテリーまたはチャージがある時のみ稼働）
-                const isCatcherActive = (state.hasRoomba && state.roombaActive && (state.batteryHighPowerLeft > 0 || state.chargedTimeLeft > 0)) || (!state.hasRoomba && state.chargedTimeLeft > 0);
-                if (isCatcherActive) {
-                    const rb = state.roombaObj;
-                    const spdLevel = state.lvlRoombaSpeed;
-                    
-                    if (state.catcherComboTimer > 0) {
-                        state.catcherComboTimer -= dt;
-                        if (state.catcherComboTimer <= 0) {
-                            state.catcherCombo = 0;
-                            state.catcherComboMultiplier = 1.0;
+                        const speedMultiplier = 1.0 + (spdLevel - 1) * 0.35;
+                        const maxCombo = 1.0 + spdLevel * 0.2;
+                        const scaleFactor = getScreenScaleFactor();
+                        const powerRadius = getCatcherRadius();
+                        const boundRadius = Math.round(40 * scaleFactor);
+                        const minX = boundRadius;
+                        const maxX = Math.max(minX, cw - boundRadius);
+                        const minY = boundRadius;
+                        const maxY = Math.max(minY, ch - boundRadius);
+
+                        rb.x += rb.vx * speedMultiplier * fs;
+                        rb.y += rb.vy * speedMultiplier * fs;
+
+                        if (rb.x <= minX) {
+                            rb.x = minX;
+                            rb.vx = Math.abs(rb.vx) || 2.2;
+                        } else if (rb.x >= maxX) {
+                            rb.x = maxX;
+                            rb.vx = -Math.abs(rb.vx) || -2.2;
+                        }
+
+                        if (rb.y <= minY) {
+                            rb.y = minY;
+                            rb.vy = Math.abs(rb.vy) || 2.0;
+                        } else if (rb.y >= maxY) {
+                            rb.y = maxY;
+                            rb.vy = -Math.abs(rb.vy) || -2.0;
+                        }
+
+                        const isGolden = state.hasGoldenRoomba && state.goldenRoombaActive;
+                        const isFastMode = state.hasRoomba && state.roombaActive;
+
+                        const rbSprite = getRoombaSprite(isGolden, isFastMode, state.catcherComboMultiplier > 1.0 ? Math.round(state.catcherComboMultiplier * 10) / 10 : 1.0);
+                        const rbSize = Math.round(84 * scaleFactor);
+                        const rbHalf = Math.round(rbSize / 2);
+                        ctx.drawImage(rbSprite, rb.x - rbHalf, rb.y - rbHalf, rbSize, rbSize);
+                        canvasDirty = true;
+
+                        let catcherHitAny = false;
+                        for (let i = ghostPool.length - 1; i >= 0; i--) {
+                            const g = ghostPool[i];
+                            if (!g.active || g.isMilestone) continue; // 記念おばけはキャッチャーが吸い込まない
+
+                            const hitR = powerRadius + g.radius * 0.7;
+                            const dx = g.x - rb.x;
+                            const dy = g.y - rb.y;
+                            if (dx * dx + dy * dy <= hitR * hitR) {
+                                state.catcherCombo++;
+                                state.catcherComboTimer = 1.6;
+                                state.catcherComboMultiplier = Math.min(maxCombo, 1.0 + state.catcherCombo * 0.05);
+
+                                const baseCatcherRate = isFastMode ? 0.10 : 0.01;
+                                const totalMultiplier = (isGolden ? 2 : 1) * state.catcherComboMultiplier * baseCatcherRate;
+                                collectGhostInstance(g, totalMultiplier, true);
+                                catcherHitAny = true;
+                            }
+                        }
+                        if (catcherHitAny) {
+                            checkDexUnlocks();
+                            updateUI();
                         }
                     }
 
-                    const speedMultiplier = 1.0 + (spdLevel - 1) * 0.35;
-                    const maxCombo = 1.0 + spdLevel * 0.2;
-                    const scaleFactor = getScreenScaleFactor();
-                    const powerRadius = getCatcherRadius();
-                    const boundRadius = Math.round(40 * scaleFactor);
-                    const minX = boundRadius;
-                    const maxX = Math.max(minX, cw - boundRadius);
-                    const minY = boundRadius;
-                    const maxY = Math.max(minY, ch - boundRadius);
-
-                    rb.x += rb.vx * speedMultiplier * fs;
-                    rb.y += rb.vy * speedMultiplier * fs;
-
-                    if (rb.x <= minX) {
-                        rb.x = minX;
-                        rb.vx = Math.abs(rb.vx) || 2.2;
-                    } else if (rb.x >= maxX) {
-                        rb.x = maxX;
-                        rb.vx = -Math.abs(rb.vx) || -2.2;
+                    // スワイプ吸引サークル
+                    if (isPointerDown && pointerPos.x > 0) {
+                        const radius = getSwipeRadius();
+                        canvasDirty = true;
+                        ctx.save(); ctx.beginPath(); ctx.arc(pointerPos.x, pointerPos.y, radius, 0, Math.PI * 2);
+                        ctx.fillStyle = state.feverTimeLeft > 0 ? 'rgba(244, 63, 94, 0.22)' : 'rgba(251, 191, 36, 0.22)';
+                        ctx.fill(); ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]); 
+                        ctx.strokeStyle = state.feverTimeLeft > 0 ? '#e11d48' : '#d97706'; 
+                        ctx.stroke(); ctx.restore();
                     }
 
-                    if (rb.y <= minY) {
-                        rb.y = minY;
-                        rb.vy = Math.abs(rb.vy) || 2.0;
-                    } else if (rb.y >= maxY) {
-                        rb.y = maxY;
-                        rb.vy = -Math.abs(rb.vy) || -2.0;
-                    }
-
-                    const isGolden = state.hasGoldenRoomba && state.goldenRoombaActive;
-                    const isFastMode = state.hasRoomba && state.roombaActive;
-
-                    const rbSprite = getRoombaSprite(isGolden, isFastMode, state.catcherComboMultiplier > 1.0 ? Math.round(state.catcherComboMultiplier * 10) / 10 : 1.0);
-                    const rbSize = Math.round(84 * scaleFactor);
-                    const rbHalf = Math.round(rbSize / 2);
-                    ctx.drawImage(rbSprite, rb.x - rbHalf, rb.y - rbHalf, rbSize, rbSize);
-                    canvasDirty = true;
-
-                    const curActive = getActiveGhosts();
-                    let catcherHitAny = false;
-                    for (let i = curActive.length - 1; i >= 0; i--) {
-                        const g = curActive[i];
-                        if (g.isMilestone) continue; // 記念おばけはキャッチャーが吸い込まない
-
-                        if (Math.hypot(g.x - rb.x, g.y - rb.y) <= powerRadius + g.radius * 0.7) {
-                            state.catcherCombo++;
-                            state.catcherComboTimer = 1.6;
-                            state.catcherComboMultiplier = Math.min(maxCombo, 1.0 + state.catcherCombo * 0.05);
-
-                            const baseCatcherRate = isFastMode ? 0.10 : 0.01;
-                            const totalMultiplier = (isGolden ? 2 : 1) * state.catcherComboMultiplier * baseCatcherRate;
-                            collectGhostInstance(g, totalMultiplier, true);
-                            catcherHitAny = true;
+                    // パーティクル演出
+                    if (state.particles.length > 0) {
+                        canvasDirty = true;
+                        ctx.fillStyle = '#fbbf24';
+                        for (let i = state.particles.length - 1; i >= 0; i--) {
+                            const p = state.particles[i]; p.x += p.vx * fs; p.y += p.vy * fs; p.alpha -= 0.04 * fs;
+                            if (p.alpha <= 0) { state.particles.splice(i, 1); continue; }
+                            ctx.globalAlpha = p.alpha;
+                            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                         }
                     }
-                    if (catcherHitAny) {
-                        checkDexUnlocks();
-                        updateUI();
-                    }
-                }
 
-                // スワイプ吸引サークル
-                if (isPointerDown && pointerPos.x > 0) {
-                    const radius = getSwipeRadius();
-                    canvasDirty = true;
-                    ctx.save(); ctx.beginPath(); ctx.arc(pointerPos.x, pointerPos.y, radius, 0, Math.PI * 2);
-                    ctx.fillStyle = state.feverTimeLeft > 0 ? 'rgba(244, 63, 94, 0.22)' : 'rgba(251, 191, 36, 0.22)';
-                    ctx.fill(); ctx.lineWidth = 2.5; ctx.setLineDash([6, 4]); 
-                    ctx.strokeStyle = state.feverTimeLeft > 0 ? '#e11d48' : '#d97706'; 
-                    ctx.stroke(); ctx.restore();
-                }
-
-                // パーティクル演出
-                if (state.particles.length > 0) {
-                    canvasDirty = true;
-                    ctx.fillStyle = '#fbbf24';
-                    for (let i = state.particles.length - 1; i >= 0; i--) {
-                        const p = state.particles[i]; p.x += p.vx * fs; p.y += p.vy * fs; p.alpha -= 0.04 * fs;
-                        if (p.alpha <= 0) { state.particles.splice(i, 1); continue; }
-                        ctx.globalAlpha = p.alpha;
-                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                    // 浮動テキスト演出
+                    if (state.floatingTexts.length > 0) {
+                        canvasDirty = true;
+                        ctx.font = '800 13px "M PLUS Rounded 1c", sans-serif';
+                        ctx.textAlign = 'center';
+                        for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
+                            const ft = state.floatingTexts[i]; ft.y += ft.vy * fs; ft.alpha -= 0.03 * fs;
+                            if (ft.alpha <= 0) { state.floatingTexts.splice(i, 1); continue; }
+                            ctx.globalAlpha = ft.alpha;
+                            ctx.fillStyle = ft.color;
+                            ctx.fillText(ft.text, ft.x, ft.y);
+                        }
                     }
+                    ctx.globalAlpha = 1.0;
                 }
-
-                // 浮動テキスト演出
-                if (state.floatingTexts.length > 0) {
-                    canvasDirty = true;
-                    ctx.font = '800 13px "M PLUS Rounded 1c", sans-serif';
-                    ctx.textAlign = 'center';
-                    for (let i = state.floatingTexts.length - 1; i >= 0; i--) {
-                        const ft = state.floatingTexts[i]; ft.y += ft.vy * fs; ft.alpha -= 0.03 * fs;
-                        if (ft.alpha <= 0) { state.floatingTexts.splice(i, 1); continue; }
-                        ctx.globalAlpha = ft.alpha;
-                        ctx.fillStyle = ft.color;
-                        ctx.fillText(ft.text, ft.x, ft.y);
-                    }
-                }
-                ctx.globalAlpha = 1.0;
             } catch (err) {
                 console.error("[gameLoop Error]", err);
             }
@@ -11453,6 +11518,9 @@ function openArcadeModal() {
         window.WHACK_TARGETS = WHACK_TARGETS;
         window.getFishBoatX = () => fishBoatX;
         window.getFishHookState = () => fishHookState;
+        window.isRoomHiddenByModal = isRoomHiddenByModal;
+        window.dropSpriteCache = dropSpriteCache;
+        window.getTotalGhostsInRoom = getTotalGhostsInRoom;
     })();
     </script>
 </body>
