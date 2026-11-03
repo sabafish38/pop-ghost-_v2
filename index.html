@@ -36,30 +36,18 @@
         }
     </script>
 
+    <!-- 📢 Google AdSense 審査用・広告コード -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3928469396768123"
+         crossorigin="anonymous" data-ad-frequency-hint="30s"></script>
+
     <!-- 📢 Google AdSense for Games (H5ゲーム広告 / リワード広告) -->
     <script>
-        // ★ 配信時にここをご自身のAdSenseパブリッシャーIDに書き換えてください ★
-        // 例: window.ADSENSE_CLIENT_ID = 'ca-pub-1234567890123456';
-        window.ADSENSE_CLIENT_ID = 'ca-pub-XXXXXXXXXXXXXXXX';
+        window.ADSENSE_CLIENT_ID = 'ca-pub-3928469396768123';
 
         window.adsbygoogle = window.adsbygoogle || [];
         window.adBreak = window.adConfig = function(o) { adsbygoogle.push(o); };
 
-        if (window.ADSENSE_CLIENT_ID && window.ADSENSE_CLIENT_ID !== 'ca-pub-XXXXXXXXXXXXXXXX') {
-            const adScript = document.createElement('script');
-            adScript.async = true;
-            adScript.setAttribute('data-ad-client', window.ADSENSE_CLIENT_ID);
-            adScript.setAttribute('data-ad-frequency-hint', '30s');
-            // テスト環境の場合は test="on"
-            if (window.location.hostname === 'localhost' || window.location.protocol === 'file:') {
-                adScript.setAttribute('data-adbreak-test', 'on');
-            }
-            adScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-            document.head.appendChild(adScript);
-            console.log('[AdSense] H5 Games Ads script loaded with Client ID:', window.ADSENSE_CLIENT_ID);
-        } else {
-            console.log('[AdSense] Client ID not configured. Running with fallback simulation modal.');
-        }
+        console.log('[AdSense] H5 Games Ads initialized with Client ID:', window.ADSENSE_CLIENT_ID);
     </script>
     <style>
         * {
@@ -804,6 +792,21 @@
                     <button id="btn-settings-close" class="text-stone-500 hover:text-stone-900 font-extrabold text-base px-2">✕</button>
                 </div>
 
+                <!-- データ引き継ぎ・バックアップセクション -->
+                <div class="mb-3 bg-stone-100 p-2.5 rounded-lg border border-stone-300">
+                    <div class="text-xs font-bold text-stone-800 mb-1.5 flex items-center gap-1">
+                        <span>💾</span><span>データ引き継ぎ・バックアップ</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="btn-settings-export-save" class="flex-1 py-1 text-[10px] font-extrabold bg-indigo-100 hover:bg-indigo-200 text-indigo-900 rounded-lg border border-indigo-300 doodle-button cursor-pointer">
+                            📤 書き出し (コピー)
+                        </button>
+                        <button id="btn-settings-import-save" class="flex-1 py-1 text-[10px] font-extrabold bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-lg border border-emerald-300 doodle-button cursor-pointer">
+                            📥 読み込み (復元)
+                        </button>
+                    </div>
+                </div>
+
                 <!-- 言語切り替えセクション -->
                 <div class="mb-3 bg-stone-100 p-2.5 rounded-lg border border-stone-300">
                     <div class="text-xs font-bold text-stone-800 mb-1.5 flex items-center gap-1">
@@ -865,6 +868,36 @@
                 <button id="btn-settings-ok" class="doodle-button w-full py-2 bg-amber-300 hover:bg-amber-400 text-stone-900 font-extrabold text-xs">
                     完了
                 </button>
+            </div>
+        </div>
+
+        <!-- モーダル: データ引き継ぎ・バックアップ (エクスポート/インポート) -->
+        <div id="modal-save-transfer" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-3 sm:p-4">
+            <div class="doodle-box w-full max-w-sm sm:max-w-md p-4 bg-[#fdfbf7] flex flex-col max-h-[86dvh] overflow-hidden">
+                <div class="flex justify-between items-center border-b-2 border-stone-800 pb-2 mb-2.5 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-base" id="transfer-modal-icon">💾</span>
+                        <h2 class="text-xs sm:text-sm font-extrabold text-stone-900" id="transfer-modal-title">セーブデータの引き継ぎ</h2>
+                    </div>
+                    <button id="btn-transfer-close" class="text-stone-500 hover:text-stone-900 font-extrabold text-base px-2">✕</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-2.5 text-xs text-stone-800 leading-relaxed pr-1 no-scrollbar">
+                    <p class="text-[11px] text-stone-600" id="transfer-modal-desc">
+                        ドメイン変更や機種変更の際に、このコードを使ってデータを移行できます。
+                    </p>
+                    <textarea id="transfer-code-area" rows="6" class="w-full p-2 text-[10.5px] font-mono bg-stone-50 border-2 border-stone-400 rounded-lg text-stone-800 select-all resize-none focus:outline-none focus:border-amber-500" placeholder="ここに引き継ぎコードを貼り付けてください..."></textarea>
+                    <p id="transfer-status-msg" class="text-[11px] font-bold text-center hidden"></p>
+                </div>
+
+                <div class="pt-2.5 shrink-0 border-t border-stone-200 mt-2 flex flex-col gap-1.5">
+                    <button id="btn-transfer-action" class="doodle-button w-full py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-stone-900 font-extrabold text-xs">
+                        📋 クリップボードにコピー
+                    </button>
+                    <button id="btn-transfer-cancel" class="doodle-button w-full py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold text-xs">
+                        閉じる
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -7315,6 +7348,145 @@
             }
         }
 
+        let transferMode = 'export'; // 'export' | 'import'
+
+        function openSaveExportModal() {
+            initAudio();
+            transferMode = 'export';
+            const modal = document.getElementById('modal-save-transfer');
+            const icon = document.getElementById('transfer-modal-icon');
+            const title = document.getElementById('transfer-modal-title');
+            const desc = document.getElementById('transfer-modal-desc');
+            const area = document.getElementById('transfer-code-area');
+            const btnAct = document.getElementById('btn-transfer-action');
+            const status = document.getElementById('transfer-status-msg');
+
+            if (icon) icon.textContent = '📤';
+            if (title) title.textContent = 'セーブデータの書き出し (バックアップ)';
+            if (desc) desc.textContent = '現在のプレイデータをコードに変換しました。「コピー」を押してメモ帳等に保存するか、別ドメインへ移してください。';
+            
+            saveGameDataNow();
+            const raw = localStorage.getItem(LOCAL_STORAGE_KEY) || JSON.stringify(state);
+            try {
+                // btoa utf8 encode
+                const b64 = btoa(encodeURIComponent(raw));
+                if (area) { area.value = b64; area.readOnly = true; }
+            } catch (e) {
+                if (area) { area.value = raw; area.readOnly = true; }
+            }
+
+            if (btnAct) {
+                btnAct.textContent = '📋 クリップボードにコピー';
+                btnAct.className = 'doodle-button w-full py-2 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-extrabold text-xs';
+            }
+            if (status) { status.classList.add('hidden'); }
+
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function openSaveImportModal() {
+            initAudio();
+            transferMode = 'import';
+            const modal = document.getElementById('modal-save-transfer');
+            const icon = document.getElementById('transfer-modal-icon');
+            const title = document.getElementById('transfer-modal-title');
+            const desc = document.getElementById('transfer-modal-desc');
+            const area = document.getElementById('transfer-code-area');
+            const btnAct = document.getElementById('btn-transfer-action');
+            const status = document.getElementById('transfer-status-msg');
+
+            if (icon) icon.textContent = '📥';
+            if (title) title.textContent = 'セーブデータの読み込み (復元)';
+            if (desc) desc.textContent = '旧ドメインや別端末でコピーした引き継ぎコード（またはJSON）を下の枠に貼り付けて「復元する」を押してください。';
+            if (area) { area.value = ''; area.readOnly = false; }
+            if (btnAct) {
+                btnAct.textContent = '🔄 データを復元して読み込む';
+                btnAct.className = 'doodle-button w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold text-xs';
+            }
+            if (status) { status.classList.add('hidden'); }
+
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeSaveTransferModal() {
+            const modal = document.getElementById('modal-save-transfer');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function executeTransferAction() {
+            initAudio();
+            const area = document.getElementById('transfer-code-area');
+            const status = document.getElementById('transfer-status-msg');
+
+            if (transferMode === 'export') {
+                if (!area) return;
+                area.select();
+                try {
+                    navigator.clipboard.writeText(area.value).then(() => {
+                        showGameToast('📋 引き継ぎコードをコピーしました！');
+                        if (status) {
+                            status.textContent = '✅ コピー完了！メモ帳などに大切に保管してください。';
+                            status.className = 'text-[11px] font-bold text-center text-emerald-700';
+                            status.classList.remove('hidden');
+                        }
+                    }).catch(() => {
+                        showGameToast('テキストエリアを選択しました。手動でコピーしてください。');
+                    });
+                } catch (e) {
+                    showGameToast('テキストエリアを選択しました。手動でコピーしてください。');
+                }
+            } else {
+                // Import
+                const inputVal = area ? area.value.trim() : '';
+                if (!inputVal) {
+                    showGameToast('⚠️ コードが入力されていません');
+                    return;
+                }
+                let jsonStr = '';
+                try {
+                    // Try base64 decode first
+                    jsonStr = decodeURIComponent(atob(inputVal));
+                } catch (e) {
+                    // Fallback to raw JSON
+                    jsonStr = inputVal;
+                }
+
+                try {
+                    const parsed = JSON.parse(jsonStr);
+                    if (typeof parsed !== 'object' || parsed === null || typeof parsed.score !== 'number') {
+                        throw new Error('Invalid data format');
+                    }
+                    // Restore state
+                    Object.assign(state, parsed);
+                    state.hasSelectedLanguage = true;
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+                    updateUI();
+                    applyRoombaUIState();
+                    applyTranslations();
+                    showGameToast('🎉 データを正常に復元しました！');
+                    closeSaveTransferModal();
+                    closeSettingsModal();
+                } catch (err) {
+                    console.error('[Import Error]', err);
+                    if (status) {
+                        status.textContent = '❌ コードが無効です。コピーし直して再度お試しください。';
+                        status.className = 'text-[11px] font-bold text-center text-rose-600';
+                        status.classList.remove('hidden');
+                    }
+                    showGameToast('❌ データの復元に失敗しました');
+                }
+            }
+        }
+
         function openPrivacyModal() {
             initAudio();
             const modal = document.getElementById('modal-privacy-policy');
@@ -7335,6 +7507,11 @@
         safeAddListener('btn-settings', 'click', openSettingsModal);
         safeAddListener('btn-settings-close', 'click', closeSettingsModal);
         safeAddListener('btn-settings-ok', 'click', closeSettingsModal);
+        safeAddListener('btn-settings-export-save', 'click', openSaveExportModal);
+        safeAddListener('btn-settings-import-save', 'click', openSaveImportModal);
+        safeAddListener('btn-transfer-close', 'click', closeSaveTransferModal);
+        safeAddListener('btn-transfer-cancel', 'click', closeSaveTransferModal);
+        safeAddListener('btn-transfer-action', 'click', executeTransferAction);
         safeAddListener('btn-settings-privacy', 'click', openPrivacyModal);
         safeAddListener('btn-privacy-close', 'click', closePrivacyModal);
         safeAddListener('btn-privacy-ok', 'click', closePrivacyModal);
@@ -11617,6 +11794,9 @@ function openArcadeModal() {
         window.getTotalGhostsInRoom = getTotalGhostsInRoom;
         window.openPrivacyModal = openPrivacyModal;
         window.closePrivacyModal = closePrivacyModal;
+        window.openSaveExportModal = openSaveExportModal;
+        window.openSaveImportModal = openSaveImportModal;
+        window.executeTransferAction = executeTransferAction;
     })();
     </script>
 </body>
