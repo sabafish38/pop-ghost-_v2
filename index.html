@@ -807,6 +807,20 @@
                     </div>
                 </div>
 
+                <!-- 🔔 おばけ通知設定セクション -->
+                <div class="mb-3 bg-stone-100 p-2.5 rounded-lg border border-stone-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs">🔔</span>
+                            <span class="text-xs font-bold text-stone-800" id="txt-notif-title">おばけ通知</span>
+                        </div>
+                        <button id="toggle-notifications" class="doodle-button px-2.5 py-0.5 text-[9px] font-extrabold bg-stone-300 text-stone-500">OFF</button>
+                    </div>
+                    <p class="text-[9.5px] text-stone-600 leading-tight" id="txt-notif-desc">
+                        電池切れ・お部屋満杯・バッテリー全快・記念おばけ登場をお知らせします。
+                    </p>
+                </div>
+
                 <!-- 言語切り替えセクション -->
                 <div class="mb-3 bg-stone-100 p-2.5 rounded-lg border border-stone-300">
                     <div class="text-xs font-bold text-stone-800 mb-1.5 flex items-center gap-1">
@@ -950,7 +964,7 @@
                         </p>
                         <div class="text-[10px] font-bold text-stone-800 space-y-0.5">
                             <div>運営：ポップゴースト！ 運営チーム (sabafish38)</div>
-                            <div>メール：<a href="mailto:sabafish.dev@gmail.com" class="text-blue-600 underline font-extrabold">sabafish.dev@gmail.com</a></div>
+                            <div>公式X：<a href="https://x.com/Sabafish38" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-extrabold">@Sabafish38</a></div>
                             <div>GitHub：<a href="https://github.com/sabafish38/pop-ghost-_v2" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline font-extrabold">pop-ghost-_v2</a></div>
                         </div>
                     </div>
@@ -3158,6 +3172,7 @@
 
             // 🎨 スキン＆背景カスタマイズ
             currentRoombaSkin: 'classic',
+            notificationsEnabled: false,
             currentRoomBg: 'default',
             unlockedRoombaSkins: { 'classic': true },
             unlockedRoomBgs: { 'default': true },
@@ -3727,6 +3742,15 @@
             safeSetText('txt-settings-btn', dict.settingsBtn);
             safeSetText('txt-settings-title', dict.settingsTitle);
             safeSetText('txt-lang-heading', dict.langHeading);
+            const notifTitles = { ja: "おばけ通知", en: "Ghost Notifications", zh: "幽灵通知", ko: "유령 알림" };
+            const notifDescs = {
+                ja: "電池切れ・お部屋満杯・バッテリー全快・記念おばけ登場をお知らせします。",
+                en: "Notify when battery is empty/full, room is full, or login reward appears.",
+                zh: "在电池耗尽/充满、房间满员或登录纪念幽灵出现时提醒您。",
+                ko: "배터리 방전/완충, 방 가득 참, 로그인 기념 유령 출현 시 알림을 받습니다."
+            };
+            safeSetText('txt-notif-title', notifTitles[lang] || notifTitles.ja);
+            safeSetText('txt-notif-desc', notifDescs[lang] || notifDescs.ja);
             safeSetText('txt-se-title', dict.seTitle);
             safeSetText('btn-settings-ok', dict.doneBtn);
             safeSetText('txt-dex-btn', dict.dexBtn ? dict.dexBtn.replace(/^[^\w\s\u3000-\u9fff\uac00-\ud7af]+/u, '').trim() || dict.dexBtn : '図鑑');
@@ -3793,6 +3817,13 @@
             else if (state.activeDexTab === 'special') safeSetText('dex-title-txt', dict.dexTitleSpecial);
             else if (state.activeDexTab === 'login') safeSetText('dex-title-txt', dict.dexTitleLogin);
 
+            const toggleNotif = document.getElementById('toggle-notifications');
+            if (toggleNotif) {
+                const isGranted = (window.Notification && Notification.permission === 'granted');
+                const isEnabled = state.notificationsEnabled && isGranted;
+                toggleNotif.textContent = isEnabled ? "ON" : "OFF";
+                toggleNotif.className = `doodle-button px-2.5 py-0.5 text-[9px] font-extrabold ${isEnabled ? 'bg-amber-300 text-stone-900 border border-amber-400' : 'bg-stone-300 text-stone-500'}`;
+            }
             updateSettingsLangButtonsUI();
             updateLoginHeaderUI();
             applyRoombaUIState();
@@ -3858,7 +3889,10 @@
 
                 const milestone = MILESTONE_GHOST_TYPES.find(g => g.reqDays === state.totalLoginDays);
                 if (milestone && !state.claimedMilestones[milestone.id]) {
-                    setTimeout(() => { triggerMilestoneReward(milestone); }, 600);
+                    setTimeout(() => { 
+                        triggerMilestoneReward(milestone); 
+                        sendGameNotification("🎁 記念おばけが登場！", `【${milestone.name}】がお部屋に現れたよ！タップして仲間にしよう🎉`, "notif-daily-login");
+                    }, 600);
                 }
             }
         }
@@ -5174,6 +5208,7 @@
                 saveGameDataNow();
                 if (!isInitial) {
                     showGameToast("🔋 毎朝4時！充電回復（最大8時間）が満タンに回復しました！");
+                    sendGameNotification("⚡ バッテリーが全快したよ！", "毎朝4時の充電回復！キャッチャーの高速バッテリーが満タン（100%）になりました🔋", "notif-battery-full");
                 }
             }
         }
@@ -5181,6 +5216,108 @@
         let audioReady = false, bgmGain = null, seGain = null, popSynth = null;
         let bgmChordsSynth = null, bgmMelodySynth = null, bgmBassSynth = null, bgmGlockenSynth = null, bgmStarSynth = null, bgmStarBass = null;
         let bgmCurrentStep = 0, feverStep = 0, bgmScheduledEventId = null;
+
+        
+        // ==========================================
+        // 🔔 Web通知システム (Web Notification API & Service Worker)
+        // ==========================================
+        let wasRoomFullForNotif = false;
+        let wasCatcherPoweredForNotif = true;
+        let bgTimers = [];
+
+        function clearBgNotificationTimers() {
+            bgTimers.forEach(id => clearTimeout(id));
+            bgTimers = [];
+        }
+
+        // Service Worker の登録
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('[SW] ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // 通知送信ヘルパー
+        function sendGameNotification(title, body, tag = 'ghost-notif') {
+            if (!state.notificationsEnabled) return;
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+            const options = {
+                body: body,
+                tag: tag,
+                renotify: true
+            };
+
+            try {
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, options);
+                    }).catch(() => {
+                        new Notification(title, options);
+                    });
+                } else {
+                    new Notification(title, options);
+                }
+            } catch (err) {
+                console.log('[Notification Error]', err);
+            }
+        }
+
+        // バックグラウンド移行時の通知タイマースケジュール
+        function scheduleBackgroundNotifications() {
+            clearBgNotificationTimers();
+            if (!state.notificationsEnabled) return;
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+            // ① お部屋満杯までの時間
+            const currentTotal = getTotalGhostsInRoom();
+            const cap = getMaxCapacity();
+            if (currentTotal < cap) {
+                const intervalSec = (getSpawnIntervalMs() / 1000);
+                const batch = getSpawnBatchSizeBase();
+                const ratePerSec = intervalSec > 0 ? (batch / intervalSec) : 1;
+                const needed = cap - currentTotal;
+                const secToFull = Math.max(5, Math.ceil(needed / ratePerSec));
+                
+                const t1 = setTimeout(() => {
+                    sendGameNotification("👻 お部屋がおばけで満杯！", "お部屋がおばけでいっぱいになりました！あつめに来てね！", "notif-room-full");
+                }, secToFull * 1000);
+                bgTimers.push(t1);
+            }
+
+            // ② キャッチャーの電池切れまでの時間
+            if (state.hasRoomba && state.roombaActive) {
+                const totalSecLeft = (state.batteryHighPowerLeft || 0) + (state.chargedTimeLeft || 0);
+                if (totalSecLeft > 0) {
+                    const t2 = setTimeout(() => {
+                        sendGameNotification("🔋 電池が切れちゃった！", "おばけキャッチャーの高速バッテリーが切れました。充電してあげてね⚡", "notif-battery-empty");
+                    }, totalSecLeft * 1000);
+                    bgTimers.push(t2);
+                }
+            }
+
+            // ③ 翌朝4時のバッテリー全快＆ログイン記念おばけ
+            const now = new Date();
+            let next4am = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
+            if (now.getHours() >= 4) {
+                next4am.setDate(next4am.getDate() + 1);
+            }
+            const msTo4am = Math.max(1000, next4am.getTime() - now.getTime());
+            const t3 = setTimeout(() => {
+                sendGameNotification("⚡ バッテリー全快＆新しい1日！", "毎朝4時の充電回復！バッテリーが満タンになり、新しいログイン記念が届いたよ🎉", "notif-daily-cycle");
+            }, msTo4am);
+            bgTimers.push(t3);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                scheduleBackgroundNotifications();
+            } else {
+                clearBgNotificationTimers();
+            }
+        });
 
         function applyAudioVolumes() {
             if (!audioReady) return;
@@ -5225,6 +5362,13 @@
             if (txtBgm) txtBgm.textContent = `${state.bgmVolume}%`;
             if (txtSe) txtSe.textContent = `${state.seVolume}%`;
 
+            const toggleNotif = document.getElementById('toggle-notifications');
+            if (toggleNotif) {
+                const isGranted = (window.Notification && Notification.permission === 'granted');
+                const isEnabled = state.notificationsEnabled && isGranted;
+                toggleNotif.textContent = isEnabled ? "ON" : "OFF";
+                toggleNotif.className = `doodle-button px-2.5 py-0.5 text-[9px] font-extrabold ${isEnabled ? 'bg-amber-300 text-stone-900 border border-amber-400' : 'bg-stone-300 text-stone-500'}`;
+            }
             updateSettingsLangButtonsUI();
         }
 
@@ -5885,6 +6029,14 @@
             const actualTotalCount = getTotalGhostsInRoom();
             const cap = getMaxCapacity();
             setTextCached('count-display', `${formatAstronomicalNumber(actualTotalCount)} / ${formatAstronomicalNumber(cap)}`);
+            if (actualTotalCount >= cap) {
+                if (!wasRoomFullForNotif) {
+                    wasRoomFullForNotif = true;
+                    sendGameNotification("👻 お部屋がおばけで満杯！", "お部屋がおばけでいっぱいになりました！あつめに来てね！", "notif-room-full");
+                }
+            } else {
+                wasRoomFullForNotif = false;
+            }
             const capBar = document.getElementById('capacity-bar');
             if (capBar) {
                 const w = `${Math.min(100, (actualTotalCount / cap) * 100)}%`;
@@ -7535,6 +7687,42 @@
         }
 
         safeAddListener('btn-settings-reset-data', 'click', resetAllGameData);
+
+        safeAddListener('toggle-notifications', 'click', async () => {
+            if (!('Notification' in window)) {
+                showGameToast('⚠️ このブラウザは通知に対応していません');
+                return;
+            }
+
+            if (state.notificationsEnabled) {
+                state.notificationsEnabled = false;
+                saveGameDataNow();
+                updateSettingsModalUI();
+                showGameToast('🔕 おばけ通知をオフにしました');
+            } else {
+                if (Notification.permission === 'granted') {
+                    state.notificationsEnabled = true;
+                    saveGameDataNow();
+                    updateSettingsModalUI();
+                    showGameToast('🔔 おばけ通知をオンにしました！');
+                    sendGameNotification('🔔 おばけ通知がオンになりました！', '電池切れ・お部屋満杯・バッテリー全快をお知らせします👻', 'notif-test');
+                } else if (Notification.permission === 'denied') {
+                    showGameToast('❌ ブラウザの設定で通知が拒否されています');
+                    alert('ブラウザのアドレスバーの横にあるアイコンから「通知を許可」に設定してください。');
+                } else {
+                    const permission = await Notification.requestPermission();
+                    if (permission === 'granted') {
+                        state.notificationsEnabled = true;
+                        saveGameDataNow();
+                        updateSettingsModalUI();
+                        showGameToast('🔔 おばけ通知をオンにしました！');
+                        sendGameNotification('🔔 おばけ通知がオンになりました！', '電池切れ・お部屋満杯・バッテリー全快をお知らせします👻', 'notif-test');
+                    } else {
+                        showGameToast('通知の許可が見送られました');
+                    }
+                }
+            }
+        });
 
         safeAddListener('toggle-bgm', 'click', async () => {
             if (!audioReady) await initAudio();
@@ -10837,6 +11025,10 @@ function openArcadeModal() {
                         if (cachedEcoBanner && !cachedEcoBanner.classList.contains('hidden')) cachedEcoBanner.classList.add('hidden');
                     } else if (state.hasRoomba && state.batteryHighPowerLeft <= 0 && state.chargedTimeLeft <= 0) {
                         // バッテリー切れ停止
+                        if (wasCatcherPoweredForNotif) {
+                            wasCatcherPoweredForNotif = false;
+                            sendGameNotification("🔋 電池が切れちゃった！", "おばけキャッチャーの高速バッテリーが切れました。充電してあげてね⚡", "notif-battery-empty");
+                        }
                         if (!cachedFastBanner) cachedFastBanner = document.getElementById('fast-battery-banner');
                         if (cachedFastBanner && !cachedFastBanner.classList.contains('hidden')) cachedFastBanner.classList.add('hidden');
                         if (!cachedEcoBanner) cachedEcoBanner = document.getElementById('eco-battery-banner');
