@@ -579,21 +579,21 @@
 
         <!-- メインおばけ部屋キャンバス & DOMプレイグラウンド -->
         <main id="canvas-container" class="flex-1 relative overflow-hidden cursor-pointer bg-[#fdfbf7] touch-none">
-            <!-- 稼働バナー: 強力バッテリー稼働中 -->
+            <!-- 稼働バナー: 充電回復（最大8時間）稼働中 -->
             <div id="fast-battery-banner" class="absolute top-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[360px] bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full border-2 border-stone-800 shadow-md text-center leading-tight z-30 hidden flex justify-between items-center animate-pulse">
-                <span>⚡ <b id="txt-banner-fast-title">強力バッテリー稼働中！</b></span>
+                <span>⚡ <b id="txt-banner-fast-title">お化けキャッチャー稼働中！</b></span>
                 <span class="bg-white/20 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">🔋<span id="txt-banner-fast-label">放置枠</span> <span id="fast-battery-timer-txt">2h</span></span>
             </div>
 
-            <!-- 稼働バナー: 一時停止中 -->
-            <div id="eco-battery-banner" class="absolute top-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[360px] bg-stone-700 text-amber-200 text-[9.5px] font-extrabold px-3 py-1 rounded-full border-2 border-stone-800 shadow-md text-center leading-tight z-30 hidden flex justify-between items-center">
-                <span>🍃 <b id="txt-banner-eco-title">キャッチャー一時停止中</b></span>
-                <span id="txt-banner-eco-sub" class="text-stone-300 text-[8px]">設定から再開できます</span>
+            <!-- 稼働バナー: バッテリー切れ停止中 -->
+            <div id="eco-battery-banner" class="absolute top-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[360px] bg-stone-800 text-rose-300 text-[9.5px] font-extrabold px-3 py-1.5 rounded-full border-2 border-stone-900 shadow-md text-center leading-tight z-30 hidden flex justify-between items-center">
+                <span>⚠️ <b id="txt-banner-eco-title">キャッチャー停止中（バッテリー切れ）</b></span>
+                <button id="btn-banner-resume-charge" class="bg-amber-400 hover:bg-amber-500 text-stone-900 text-[8.5px] px-2 py-0.5 rounded-full font-black shadow-sm cursor-pointer active:scale-95">🔋 充電回復へ</button>
             </div>
 
-            <!-- 稼働バナー: 動画チャージ中 -->
+            <!-- 稼働バナー: 充電回復（最大8時間）中 -->
             <div id="charge-banner" class="absolute top-2 left-1/2 -translate-x-1/2 w-[92%] max-w-[360px] bg-gradient-to-r from-stone-600 to-slate-700 text-emerald-200 text-[10px] font-extrabold px-3 py-1.5 rounded-full border-2 border-stone-800 shadow-md text-center leading-tight z-30 hidden cursor-pointer flex justify-between items-center">
-                <span>🍃 <b id="txt-banner-charge-title">動画チャージ稼働中(エコ)</b>: <b id="charge-timer-txt">0時間0分</b></span>
+                <span>🍃 <b id="txt-banner-charge-title">お化けキャッチャー稼働中</b>: <b id="charge-timer-txt">0時間0分</b></span>
                 <span id="txt-banner-charge-btn" class="bg-amber-400 text-stone-900 text-[8px] px-1.5 py-0.5 rounded-full font-bold">+延長</span>
             </div>
 
@@ -613,7 +613,7 @@
                         <span id="txt-fever-card-title" class="text-[9.5px] font-black tracking-tight drop-shadow-sm">フィーバー</span>
                         <span id="txt-fever-card-time" class="text-[7.5px] font-black bg-white/30 backdrop-blur-sm px-1 py-0.2 rounded-full">20秒</span>
                     </div>
-                    <span id="txt-fever-card-btn" class="text-[8px] font-extrabold text-amber-200 drop-shadow-sm">📺 無料発動！</span>
+                    <span id="txt-fever-card-btn" class="text-[8px] font-extrabold text-amber-200 drop-shadow-sm">⚡ 1枚消費</span>
                 </div>
             </div>
         </main>
@@ -978,7 +978,7 @@
         </div>
 
         <!-- モーダル: 初回言語選択 (初期状態で確実に表示される設計) -->
-        <div id="modal-language" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div id="modal-language" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
             <div class="doodle-box w-full max-w-xs sm:max-w-sm p-5 bg-[#fdfbf7] flex flex-col items-center text-center shadow-2xl max-h-[86dvh] overflow-y-auto no-scrollbar">
                 <div class="text-4xl mb-2 animate-bounce">🌐✨</div>
                 <h2 class="text-base font-black text-stone-900 mb-1">Select Language</h2>
@@ -1054,12 +1054,12 @@
             </div>
         </div>
 
-        <!-- モーダル: 動画チャージ -->
+        <!-- モーダル: 充電回復（最大8時間） -->
         <div id="modal-charge" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4">
             <div class="doodle-box w-full max-w-sm sm:max-w-md p-4 bg-[#fdfbf7] flex flex-col items-center text-center max-h-[86dvh] overflow-y-auto no-scrollbar">
                 <div class="text-3xl mb-1">📺🍃</div>
-                <h2 class="text-base font-extrabold text-stone-900 mb-1">キャッチャー時間チャージ</h2>
-                <p class="text-[10px] text-stone-500 mb-3">動画を1本見るごとにエコ稼働が20分増えます！（最大2時間）</p>
+                <h2 class="text-base font-extrabold text-stone-900 mb-1">充電回復（最大8時間）</h2>
+                <p class="text-[10px] text-stone-500 mb-3">動画を1本見るごとに稼働時間が20分回復します！（最大8時間）</p>
                 
                 <div class="w-full bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl p-3 mb-3 text-left">
                     <div class="flex justify-between items-center mb-1">
@@ -1073,7 +1073,7 @@
                         <span>0時間</span>
                         <span>1時間</span>
                         <span>2時間</span>
-                        <span class="font-bold text-stone-700">最大 3時間</span>
+                        <span class="font-bold text-stone-700">最大 8時間</span>
                     </div>
                 </div>
 
@@ -1123,7 +1123,7 @@
             </div>
         </div>
 
-        <!-- ⚙️ モーダル: キャッチャー強化 (吸引力 & 強力バッテリーのタブ) -->
+        <!-- ⚙️ モーダル: キャッチャー強化 (吸引力 & 充電回復（最大8時間）のタブ) -->
         <div id="modal-catcher-upgrade" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-3 sm:p-4">
             <div class="doodle-box w-full max-w-sm sm:max-w-md p-3 sm:p-4 bg-[#fdfbf7] flex flex-col max-h-[90dvh] overflow-hidden shadow-2xl">
                 <!-- ヘッダー -->
@@ -1143,13 +1143,13 @@
                     </div>
                 </div>
 
-                <!-- タブ切り替え: 🌀 吸引力 vs 🔋 強力バッテリー vs 🪙 アイテムコイン vs ⚡ ブーストコイン -->
+                <!-- タブ切り替え: 🌀 吸引力 vs 🔋 充電回復（最大8時間） vs 🪙 アイテムコイン vs ⚡ ブーストコイン -->
                 <div class="flex gap-1 mb-2.5 shrink-0">
                     <button id="tab-btn-catcher-speed" class="flex-1 py-1 text-[9px] sm:text-xs font-black rounded-lg border-2 border-stone-800 bg-indigo-600 text-white shadow-sm flex items-center justify-center gap-0.5 transition-all">
                         <span>🌀</span><span>吸引力</span>
                     </button>
                     <button id="tab-btn-catcher-battery" class="flex-1 py-1 text-[9px] sm:text-xs font-black rounded-lg border-2 border-stone-800 bg-stone-200 text-stone-700 hover:bg-stone-300 shadow-sm flex items-center justify-center gap-0.5 transition-all">
-                        <span>🔋</span><span>バッテリー</span>
+                        <span>🔋</span><span>充電回復（最大8時間）</span>
                     </button>
                     <button id="tab-btn-catcher-ticket" class="flex-1 py-1 text-[8.5px] sm:text-xs font-black rounded-lg border-2 border-stone-800 bg-stone-200 text-stone-700 hover:bg-stone-300 shadow-sm flex items-center justify-center gap-0.5 transition-all">
                         <span>🪙</span><span>アイテム</span>
@@ -1207,7 +1207,7 @@
                     </button>
                 </div>
 
-                <!-- タブパネル 2: 強力バッテリー -->
+                <!-- タブパネル 2: 充電回復（最大8時間） -->
                 <div id="tab-panel-catcher-battery" class="hidden flex-1 overflow-y-auto space-y-3 no-scrollbar pr-0.5">
                     <!-- 現在のステータスカード -->
                     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-400 rounded-xl p-3 shadow-inner">
@@ -1308,12 +1308,15 @@
                             </span>
                             <span id="upg-boost-tab-held-badge" class="text-xs font-black bg-gradient-to-r from-sky-600 to-blue-600 text-white px-2.5 py-0.5 rounded-full shadow-sm">0枚</span>
                         </div>
-                        <div class="mt-2 text-xs font-extrabold text-stone-700 flex items-center justify-between">
-                            <span>獲得制限:</span>
-                            <span class="text-blue-700 font-black text-xs">制限なし（何回でもOK！）</span>
+                        <div class="mt-2.5 text-xs font-extrabold text-stone-700 flex items-center justify-between">
+                            <span>本日の獲得 (1日10枚):</span>
+                            <span id="upg-boost-tab-daily-txt" class="text-sky-800 font-black text-xs">0 / 10枚</span>
                         </div>
-                        <div class="mt-1 text-[10px] text-sky-900 font-bold leading-tight">
-                            クールタイムは1分！動画を見るだけで、フィーバーや激熱スロット券などの消費ブーストが何度でも使えます！
+                        <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden border border-stone-300 mt-1">
+                            <div id="upg-boost-tab-daily-bar" class="bg-gradient-to-r from-sky-500 to-blue-600 h-full transition-all duration-300" style="width: 0%;"></div>
+                        </div>
+                        <div class="mt-2 text-[10px] text-sky-900 font-bold leading-tight">
+                            広告を見ると、フィーバーや激アツモードに使える「ブーストコイン」が1枚もらえます！（最大10枚・毎朝4時リセット）
                         </div>
                     </div>
 
@@ -1334,17 +1337,17 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
                         <div class="doodle-box p-2 bg-gradient-to-br from-sky-50 to-blue-50 border-2 border-sky-300 rounded-lg flex flex-col justify-between text-center shadow-sm">
                             <div class="text-xl my-0.5">⚡🔋</div>
-                            <div class="text-[10.5px] font-black text-stone-900">8時間超充電</div>
-                            <div class="text-[8px] text-stone-600 font-bold leading-tight my-1">放置中も8時間フルパワー！</div>
+                            <div class="text-[10.5px] font-black text-stone-900">充電回復（最大8時間）</div>
+                            <div class="text-[8px] text-stone-600 font-bold leading-tight my-1">放置中も最大8時間フルパワー！</div>
                             <button onclick="openPurchaseConfirm('boost:battery8h')" class="doodle-button w-full py-1 text-[9px] font-black bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded shadow-sm active:scale-95 cursor-pointer">
                                 ⚡ 1枚で交換
                             </button>
                         </div>
                         <div class="doodle-box p-2 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-300 rounded-lg flex flex-col justify-between text-center shadow-sm">
                             <div class="text-xl my-0.5">🎉✨</div>
-                            <div class="text-[10.5px] font-black text-stone-900">30秒フィーバー</div>
+                            <div class="text-[10.5px] font-black text-stone-900">20秒フィーバー</div>
                             <div class="text-[8px] text-stone-600 font-bold leading-tight my-1">部屋中のおばけを金吹雪回収！</div>
-                            <button onclick="openPurchaseConfirm('boost:fever30s')" class="doodle-button w-full py-1 text-[9px] font-black bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white rounded shadow-sm active:scale-95 cursor-pointer">
+                            <button onclick="openPurchaseConfirm('boost:fever20s')" class="doodle-button w-full py-1 text-[9px] font-black bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white rounded shadow-sm active:scale-95 cursor-pointer">
                                 ⚡ 1枚で交換
                             </button>
                         </div>
@@ -1512,18 +1515,23 @@
                     </span>
                 </div>
 
-                <!-- 👑 黄金の激熱モード発動バー -->
-                <div id="slot-golden-bar" class="w-full bg-gradient-to-r from-amber-950/80 via-yellow-950/50 to-amber-950/80 border border-amber-400/60 rounded-lg p-1.5 mb-2 flex items-center justify-between shadow-sm">
+                <!-- 👑 黄金の激熱モード発動バー (上部に固定配置) -->
+                <div id="slot-golden-bar" class="sticky top-0 z-30 w-full bg-gradient-to-r from-amber-950 via-stone-900 to-amber-950 border-2 border-amber-400/80 rounded-lg p-1.5 mb-2 flex items-center justify-between shadow-md">
                     <div class="flex items-center gap-1.5">
                         <span class="text-lg animate-bounce">👑</span>
                         <div class="text-left leading-tight">
                             <span id="slot-golden-status-title" class="text-[10.5px] font-black text-amber-300 block">黄金の激熱モード</span>
-                            <span id="slot-golden-status-desc" class="text-[8.5px] text-amber-200/90 font-bold">当選確率超UP！ (所持: <b id="slot-golden-spins-count" class="text-rose-400">0</b>回)</span>
+                            <span id="slot-golden-status-desc" class="text-[8.5px] text-amber-200/90 font-bold">当選確率超UP！ (所持数: <b id="slot-golden-spins-count" class="text-rose-400">0</b>回)</span>
                         </div>
                     </div>
-                    <button id="btn-activate-golden-slot" class="doodle-button px-2.5 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-[9.5px] rounded shadow flex items-center gap-0.5 active:scale-95 cursor-pointer">
-                        <span>🎫</span><span id="btn-golden-slot-label">1枚で発動！</span>
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button id="btn-cancel-golden-slot" class="doodle-button px-2 py-1 bg-stone-700 hover:bg-stone-600 text-stone-200 font-bold text-[9px] rounded shadow hidden active:scale-95 cursor-pointer">
+                            通常へ一時切替
+                        </button>
+                        <button id="btn-activate-golden-slot" class="doodle-button px-2.5 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-[9.5px] rounded shadow flex items-center gap-0.5 active:scale-95 cursor-pointer">
+                            <span>🎫</span><span id="btn-golden-slot-label">1枚で発動！</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- スロット筐体メインフレーム -->
@@ -1809,7 +1817,7 @@
                 <!-- 残り時間バー ＆ コンボ表示 -->
                 <div class="mb-2 shrink-0">
                     <div class="flex justify-between items-center text-[9.5px] font-black mb-1">
-                        <span id="whack-status-banner" class="text-sky-800">👆 穴から出たおばけを素早くタップ！</span>
+                        <span id="whack-status-banner" class="text-sky-800">👆 穴から出たおばけをタップ！(⚠️黄色い⚡ビリビリは減点)</span>
                         <span id="whack-combo-badge" class="bg-amber-100 border border-amber-400 text-amber-900 px-2 py-0.5 rounded-full text-[9px] font-black">0 COMBO (x1.0)</span>
                     </div>
                     <div class="w-full h-2.5 bg-stone-200 rounded-full overflow-hidden border border-stone-700">
@@ -1818,11 +1826,12 @@
                 </div>
 
                 <!-- 得点ガイドバー -->
-                <div class="grid grid-cols-4 gap-1 bg-stone-100 border border-stone-300 rounded-lg p-1.5 mb-2.5 text-center text-[9px] font-extrabold shrink-0">
-                    <div class="bg-white rounded py-0.5 border border-stone-200">👻 すっぴん<br><span class="text-emerald-600">+20玉</span></div>
-                    <div class="bg-white rounded py-0.5 border border-stone-200">🐱 ねこみみ<br><span class="text-sky-600">+50玉</span></div>
-                    <div class="bg-amber-50 rounded py-0.5 border border-amber-300">👑 キング<br><span class="text-amber-600">+150玉</span></div>
-                    <div class="bg-rose-50 rounded py-0.5 border border-rose-300">💣 バクダン<br><span class="text-rose-600">-80玉</span></div>
+                <div class="grid grid-cols-5 gap-0.5 bg-stone-100 border border-stone-300 rounded-lg p-1.5 mb-2.5 text-center text-[8px] sm:text-[9px] font-extrabold shrink-0">
+                    <div class="bg-white rounded py-0.5 border border-stone-200">👻 すっぴん<br><span class="text-emerald-600">+20</span></div>
+                    <div class="bg-white rounded py-0.5 border border-stone-200">🐱 ねこみみ<br><span class="text-sky-600">+50</span></div>
+                    <div class="bg-amber-50 rounded py-0.5 border border-amber-300">👑 キング<br><span class="text-amber-600">+150</span></div>
+                    <div class="bg-yellow-100 rounded py-0.5 border border-yellow-500">⚡ ビリビリ<br><span class="text-rose-600">-100</span></div>
+                    <div class="bg-rose-50 rounded py-0.5 border border-rose-300">💣 バクダン<br><span class="text-rose-600">-80</span></div>
                 </div>
 
                 <!-- 3x3 穴グリッド盤面 -->
@@ -1895,7 +1904,7 @@
 
                 <!-- 案内＆ステータスバー -->
                 <div id="fish-status-banner" class="w-full bg-teal-100/90 border border-teal-300 rounded px-2 py-0.5 text-center text-[9.5px] font-bold text-teal-950 mb-1 shrink-0 flex items-center justify-center gap-1 shadow-sm">
-                    <span>🎣</span> <span><b>海をタップ</b> または <b>下の「釣る！」ボタン</b>で針を落とそう！</span>
+                    <span>🎣</span> <span><b>指でスライドして狙いを定め</b>、<b>指を離す</b>か下の<b>「釣る！」ボタン</b>で針を落とそう！</span>
                 </div>
 
                 <!-- 釣りキャンバスコンテナ -->
@@ -2163,7 +2172,7 @@
                 </div>
                 <div class="grid grid-cols-3 gap-0.5">
                     <button id="dev-btn-reset-battery" class="dev-btn dev-btn-emerald py-0.5 text-[8.5px]">⚡満タン</button>
-                    <button id="dev-btn-drain-battery" class="dev-btn py-0.5 text-[8.5px]">🍃エコ(0s)</button>
+                    <button id="dev-btn-drain-battery" class="dev-btn py-0.5 text-[8.5px]">⏹️停止(0s)</button>
                     <button id="dev-btn-add-battery-1h" class="dev-btn py-0.5 text-[8.5px]">+1h追加</button>
                 </div>
                 <div class="grid grid-cols-3 gap-0.5">
@@ -2276,7 +2285,7 @@
         const LOCAL_STORAGE_KEY = 'poppopghost_save_data_release_v1';
         const MAX_POOL_SIZE = 120;
         const MAX_UPGRADE_LEVEL = 99;
-        const MAX_CHARGE_SECONDS = 3 * 3600;
+        const MAX_CHARGE_SECONDS = 8 * 3600;
         const CHARGE_REWARD_SECONDS = 20 * 60; // 広告1回あたり20分チャージ (1200秒)
 
         // ハイブリッド型キャッチャー強化価格テーブル (Lv.1〜10)
@@ -2495,7 +2504,7 @@
                 } else if (rewardType === 'charge') {
                     if (iconEl) iconEl.textContent = '🔋⚡';
                     if (titleEl) titleEl.textContent = 'おばけキャッチャー 特報';
-                    if (descEl) descEl.innerHTML = '動画広告を最後まで視聴すると、<br><b id="ad-reward-highlight" class="text-emerald-300">キャッチャーエコ稼働 +20分</b>がチャージされます！';
+                    if (descEl) descEl.innerHTML = '動画広告を最後まで視聴すると、<br><b id="ad-reward-highlight" class="text-emerald-300">キャッチャー充電回復 +20分</b>（稼働時間）がチャージされます！';
                 } else {
                     if (iconEl) iconEl.textContent = '👻💎';
                     if (titleEl) titleEl.textContent = 'ポップゴースト！特報';
@@ -3001,8 +3010,10 @@
             boostCoins: 0,
             dailyTicketsClaimed: 0,
             dailyItemCoinsClaimed: 0,
+            dailyBoostCoinsClaimed: 0,
             lastTicketClaimDate: '',
             lastItemCoinClaimDate: '',
+            lastBoostCoinClaimDate: '',
             lastTicketAdTimestamp: 0,
             lastItemCoinAdTimestamp: 0,
             lastBoostCoinAdTimestamp: 0,
@@ -3093,19 +3104,19 @@
                 goldenOffBtn: "稼働",
                 feverTitle: "🔥 フィーバー",
                 feverTime: "20秒",
-                feverAdBtn: "📺 広告発動",
+                feverAdBtn: "⚡ 1枚消費",
                 speedTitle: "🌀 吸引力",
-                batteryTitle: "🔋 強力バッテリー",
+                batteryTitle: "🔋 充電回復（最大8時間）",
                 upgradeBuyBtn: "⚡ 強化(購入)",
                 reqBodyMsg: "🔒 本体必要",
                 maxReached: "MAX到達",
                 // Banners
-                bannerFastTitle: "強力バッテリー稼働中！",
+                bannerFastTitle: "お化けキャッチャー稼働中！",
                 bannerFastLabel: "放置枠",
-                bannerEcoTitle: "キャッチャー一時停止中",
-                bannerEcoSub: "設定から再開できます",
-                bannerChargeTitle: "動画チャージ稼働中(エコ)",
-                bannerChargeBtn: "+延長",
+                bannerEcoTitle: "キャッチャー停止中（バッテリー切れ）",
+                bannerEcoSub: "充電回復で再開できます",
+                bannerChargeTitle: "お化けキャッチャー稼働中",
+                bannerChargeBtn: "+充電回復",
                 // Dex
                 dexTitleRegular: "📖 通常おばけ図鑑 (全101種)",
                 dexTitleSpecial: "📅 曜日・季節おばけ (全19種)",
@@ -3185,7 +3196,7 @@
                 reqBodyMsg: "🔒 Needs Catcher",
                 maxReached: "MAX",
                 // Banners
-                bannerFastTitle: "Power Battery Active!",
+                bannerFastTitle: "Ghost Catcher Active!",
                 bannerFastLabel: "Offline Cap",
                 bannerEcoTitle: "Catcher Paused",
                 bannerEcoSub: "Can be resumed in settings",
@@ -3757,9 +3768,53 @@
 
 
         function openLoginInfoModal() {
+            const days = state.totalLoginDays || 1;
+            const daysTxt = document.getElementById('info-current-days-txt');
+            if (daysTxt) daysTxt.textContent = `通算 ${days}日目`;
+
+            const box = document.getElementById('info-next-milestone-box');
+            if (box) {
+                const nextMilestone = MILESTONE_GHOST_TYPES.find(m => days < m.reqDays);
+                let nextHtml = '';
+                if (nextMilestone) {
+                    const diff = nextMilestone.reqDays - days;
+                    nextHtml = `<div class="mb-2 p-2 bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg border border-amber-300 text-stone-900 text-[11px] font-black shadow-sm">
+                        🎁 次の記念おばけ【${nextMilestone.name}】まで<br>
+                        👉 あと <span class="text-rose-600 text-sm font-black">${diff}日</span> ログインで解放！
+                    </div>`;
+                } else {
+                    nextHtml = `<div class="mb-2 p-2 bg-emerald-100 rounded-lg border border-emerald-300 text-emerald-900 text-[11px] font-black">
+                        🎉 全ての通算記念おばけ（全7種）を獲得しました！大皆勤賞おめでとうございます！
+                    </div>`;
+                }
+
+                const listHtml = MILESTONE_GHOST_TYPES.map(m => {
+                    const reached = days >= m.reqDays;
+                    return `<div class="flex items-center justify-between text-[9.5px] py-1 border-b border-stone-200 last:border-0 ${reached ? 'text-emerald-700 font-black' : 'text-stone-500 font-bold'}">
+                        <span>${reached ? '💮' : '🔒'} 通算 ${m.reqDays}日: <b>${m.name}</b></span>
+                        <span class="${reached ? 'text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded font-black' : 'text-stone-400'}">${reached ? '達成済' : `あと${m.reqDays - days}日`}</span>
+                    </div>`;
+                }).join('');
+
+                box.innerHTML = `
+                    ${nextHtml}
+                    <div class="text-[10px] font-extrabold text-stone-800 mb-1">🏆 毎日遊んで通算記念おばけをゲット！</div>
+                    <div class="text-[9px] text-stone-600 mb-2 leading-relaxed">
+                        連続ログインが途切れても大丈夫！マイペースに通算ログイン日数を重ねていくと、図鑑の特別なおばけたちがプレゼントされるよ。
+                    </div>
+                    <div class="bg-white/90 rounded-lg p-2 border border-stone-300 max-h-40 overflow-y-auto no-scrollbar shadow-inner text-left">
+                        ${listHtml}
+                    </div>
+                `;
+            }
+
             const modal = document.getElementById('modal-login-info');
             if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         }
+        safeAddListener('btn-banner-resume-charge', 'click', () => {
+            initAudio();
+            openChargeModal();
+        });
         safeAddListener('btn-login-info', 'click', openLoginInfoModal);
         safeAddListener('btn-login-info-close', 'click', () => {
             const modal = document.getElementById('modal-login-info');
@@ -5000,7 +5055,7 @@
                 applyRoombaUIState();
                 saveGameDataNow();
                 if (!isInitial) {
-                    showGameToast("🔋 毎朝4時！強力バッテリーが満タンに回復しました！");
+                    showGameToast("🔋 毎朝4時！充電回復（最大8時間）が満タンに回復しました！");
                 }
             }
         }
@@ -5246,17 +5301,11 @@
                 const efficiency = Math.min(0.98, 0.85 + (spdLevel - 1) * 0.015);
 
                 let fastSeconds = Math.min(seconds, state.batteryHighPowerLeft);
-                let ecoSeconds = Math.max(0, seconds - fastSeconds);
                 state.batteryHighPowerLeft = Math.max(0, state.batteryHighPowerLeft - fastSeconds);
 
                 const fastHarvest = Math.floor((fastSeconds / interval) * batchSize * efficiency);
-                const ecoHarvest = Math.floor((ecoSeconds / interval) * batchSize * efficiency);
-
-                const fastScore = Math.floor(fastHarvest * strictExpectedValue * 0.10 * goldMultiplier * speedBonus);
-                const ecoScore = Math.floor(ecoHarvest * strictExpectedValue * 0.01 * goldMultiplier * speedBonus);
-
-                const totalHarvest = fastHarvest + ecoHarvest;
-                const totalScore = fastScore + ecoScore;
+                const totalHarvest = fastHarvest;
+                const totalScore = Math.floor(fastHarvest * strictExpectedValue * 0.10 * goldMultiplier * speedBonus);
                 state.score += totalScore;
 
                 const unlockedList = REGULAR_GHOST_TYPES.filter(t => state.unlockedDex[t.id]);
@@ -5286,10 +5335,10 @@
 
                 const minutesAway = Math.floor(seconds / 60);
                 const labels = {
-                    ja: { header: "キャッチャーが留守中にお掃除しました！", away: "離れていた時間:", caught: "回収したおばけ:", fast: "⚡ 強力充電:", eco: "🍃 エコ巡航(1%):", unit: "玉", gold: "(黄金2倍!)", speedBonus: (lvl, mul) => `(🌀 吸引力Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>留守中に新種のおばけが解放可能になりました！</b><br>図鑑を開いて解放ボタンを押そう：" },
-                    en: { header: "Your Catcher cleaned while you were away!", away: "Time away:", caught: "Ghosts caught:", fast: "⚡ Power Mode:", eco: "🍃 Eco Mode (1%):", unit: "Orbs", gold: "(2x Golden!)", speedBonus: (lvl, mul) => `(🌀 Suction Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>New ghosts are ready to unlock!</b><br>Open the Dex and tap Unlock:" },
-                    zh: { header: "捕获机在离线期间进行了大扫除！", away: "离开时长:", caught: "捕获幽灵:", fast: "⚡ 强力电池:", eco: "🍃 节能巡航(1%):", unit: "宝玉", gold: "(黄金2倍!)", speedBonus: (lvl, mul) => `(🌀 吸引力Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>离线期间有新幽灵达成了解锁条件！</b><br>打开图鉴点击解锁吧：" },
-                    ko: { header: "자리를 비운 사이 캐처가 청소했습니다!", away: "비운 시간:", caught: "수거한 유령:", fast: "⚡ 강력 충전:", eco: "🍃 에코 순항(1%):", unit: "구슬", gold: "(골든 2배!)", speedBonus: (lvl, mul) => `(🌀 흡인력Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>새로운 유령 해금 조건이 달성되었습니다!</b><br>도감을 열어 해금해 보세요：" }
+                    ja: { header: "キャッチャーが留守中にお掃除しました！", away: "離れていた時間:", caught: "回収したおばけ:", fast: "⚡ 稼働充電:", eco: "⚠️ バッテリー切れ停止:", unit: "玉", gold: "(黄金2倍!)", speedBonus: (lvl, mul) => `(🌀 吸引力Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>留守中に新種のおばけが解放可能になりました！</b><br>図鑑を開いて解放ボタンを押そう：" },
+                    en: { header: "Your Catcher cleaned while you were away!", away: "Time away:", caught: "Ghosts caught:", fast: "⚡ Active Mode:", eco: "⚠️ Battery Expired:", unit: "Orbs", gold: "(2x Golden!)", speedBonus: (lvl, mul) => `(🌀 Suction Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>New ghosts are ready to unlock!</b><br>Open the Dex and tap Unlock:" },
+                    zh: { header: "捕获机在离线期间进行了大扫除！", away: "离开时长:", caught: "捕获幽灵:", fast: "⚡ 运行电量:", eco: "⚠️ 电量耗尽停止:", unit: "宝玉", gold: "(黄金2倍!)", speedBonus: (lvl, mul) => `(🌀 吸引力Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>离线期间有新幽灵达成了解锁条件！</b><br>打开图鉴点击解锁吧：" },
+                    ko: { header: "자리를 비운 사이 캐처가 청소했습니다!", away: "비운 시간:", caught: "수거한 유령:", fast: "⚡ 가동 충전:", eco: "⚠️ 배터리 방전 정지:", unit: "구슬", gold: "(골든 2배!)", speedBonus: (lvl, mul) => `(🌀 흡인력Lv.${lvl}: x${mul.toFixed(2)})`, readyNotice: "✨ <b>새로운 유령 해금 조건이 달성되었습니다!</b><br>도감을 열어 해금해 보세요：" }
                 };
                 const curL = labels[lang] || labels.ja;
 
@@ -5303,13 +5352,14 @@
                     </div>
                     <div class="bg-stone-200/60 rounded p-1.5 my-1.5 space-y-0.5 text-[9px] border border-stone-300">
                         <div class="flex justify-between text-emerald-800 font-bold">
-                            <span>${curL.fast} ${(fastSeconds/3600).toFixed(1)}h</span>
-                            <span>+${formatAstronomicalNumber(fastScore)} ${curL.unit}</span>
+                            <span>⚡ 稼働回収: ${(fastSeconds/3600).toFixed(1)}h</span>
+                            <span>+${formatAstronomicalNumber(totalScore)} ${curL.unit}</span>
                         </div>
-                        <div class="flex justify-between text-stone-600">
-                            <span>${curL.eco} ${(ecoSeconds/3600).toFixed(1)}h</span>
-                            <span>+${formatAstronomicalNumber(ecoScore)} ${curL.unit}</span>
-                        </div>
+                        ${seconds > fastSeconds ? `
+                            <div class="text-[8.5px] text-amber-700 font-bold pt-0.5">
+                                ⚠️ バッテリー終了後は停止していました（充電回復で再開）
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="text-center text-sm font-extrabold text-amber-600 mt-2">
                         +${formatAstronomicalNumber(totalScore)} ${curL.unit} ${isGolden ? curL.gold : ""} ${spdLevel > 1 ? curL.speedBonus(spdLevel, speedBonus) : ""}
@@ -5335,8 +5385,8 @@
                 document.getElementById('offline-title').textContent = isFull ? (fullTitles[lang] || fullTitles.ja) : (welcomeTitles[lang] || welcomeTitles.ja);
 
                 const labelsNoCatcher = {
-                    ja: { away: "離れていた時間:", ghosts: "溜まったおばけ:", full: "(満杯)", tip: "💡 <b>動画チャージ分もオフライン中に自動回収して消費されます！</b><br>おばけキャッチャー本体(¥380)を購入すると、時間切れ後も<b>24時間ずっと完全放置で自動回収</b>してくれます！" },
-                    en: { away: "Time away:", ghosts: "Ghosts gathered:", full: "(Full)", tip: "💡 <b>Ad Charge time is consumed during offline away time</b><br>Get the Ghost Catcher (¥380) to enjoy <b>24h offline auto-vacuum</b> even when closed!" },
+                    ja: { away: "離れていた時間:", ghosts: "溜まったおばけ:", full: "(満杯)", tip: "💡 <b>充電回復（最大8時間）分もオフライン中に自動回収して消費されます！</b><br>おばけキャッチャー本体(🪙3枚)を解放すると、<b>オフライン中もバッテリーが続く限り自動回収</b>してくれます！（バッテリー切れ時は停止）" },
+                    en: { away: "Time away:", ghosts: "Ghosts gathered:", full: "(Full)", tip: "💡 <b>Ad Charge time is consumed during offline away time</b><br>Unlock the Ghost Catcher (🪙 3 coins) for <b>offline auto-vacuum while battery lasts</b>! (Pauses when battery runs out)" },
                     zh: { away: "离开时长:", ghosts: "聚集的幽灵:", full: "(已满)", tip: "💡 <b>广告充能时间在离线期间也会持续自动收集并消耗！</b><br>兑换捕获机本体(🪙3枚金币)后，时间耗尽也可享受<b>24小时完全离线自动收集！</b>" },
                     ko: { away: "비운 시간:", ghosts: "모인 유령:", full: "(가득 참)", tip: "💡 <b>광고 충전 시간도 오프라인 중에 자동 수거되며 소비됩니다!</b><br>유령 캐처 본체(¥380)를 구매하면 시간이 다 되어도 <b>24시간 내내 완전 방치 자동 수거</b>を支援합니다!" }
                 };
@@ -5559,7 +5609,8 @@
                 }
                 if (chargeBanner) chargeBanner.classList.add('hidden');
 
-                if (state.roombaActive) {
+                const hasCatcherPower = (state.batteryHighPowerLeft > 0 || state.chargedTimeLeft > 0);
+                if (state.roombaActive && hasCatcherPower) {
                     if (fastBanner) fastBanner.classList.remove('hidden');
                     if (ecoBanner) ecoBanner.classList.add('hidden');
                     const timerTxt = document.getElementById('fast-battery-timer-txt');
@@ -5677,7 +5728,7 @@
 
             if (remaining >= MAX_CHARGE_SECONDS) {
                 adBtn.disabled = true;
-                if (adLabel) adLabel.innerHTML = "満タン<br>(3時間)";
+                if (adLabel) adLabel.innerHTML = "満タン<br>(8時間)";
             } else {
                 adBtn.disabled = false;
                 if (adLabel) adLabel.innerHTML = "広告視聴<br>+20分";
@@ -5774,15 +5825,21 @@
 
             const feverEl = document.getElementById('dev-mon-fever');
             if (feverEl) feverEl.textContent = state.feverTimeLeft > 0 ? `${state.feverTimeLeft.toFixed(1)}s` : 'OFF';
+            const feverCardBtn = document.getElementById('txt-fever-card-btn');
+            if (feverCardBtn) {
+                const bCoins = state.boostCoins || 0;
+                feverCardBtn.textContent = bCoins >= 1 ? `⚡ 1枚消費 (所持:${bCoins})` : "⚡ 1枚消費 (残0)";
+            }
 
             const batEl = document.getElementById('dev-mon-battery');
             if (batEl) {
                 if (state.hasRoomba) {
                     batEl.textContent = state.roombaActive ? formatHoursMinutesSeconds(state.batteryHighPowerLeft) : '一時停止';
                 } else {
-                    batEl.textContent = state.chargedTimeLeft > 0 ? `残${formatHoursMinutesSeconds(state.chargedTimeLeft)}` : 'エコ(0h)';
+                    batEl.textContent = state.chargedTimeLeft > 0 ? `残${formatHoursMinutesSeconds(state.chargedTimeLeft)}` : '停止(0h)';
                 }
             }
+            applyRoombaUIState();
         }
 
         function syncDevPanelInputs() {
@@ -5907,10 +5964,11 @@
         // 🪙 アイテムコイン＆⚡ブーストコイン管理システム
         // =========================================================
         const DAILY_ITEM_COIN_MAX = 5;
-        const DAILY_TICKET_MAX = 5; // 後方互換性
-        const ITEM_COIN_COOLDOWN_SEC = 45; // アイテムコイン取得クールタイム (45秒)
-        const TICKET_COOLDOWN_SEC = 45; // 後方互換性
-        const BOOST_COIN_COOLDOWN_SEC = 60; // ブーストコイン取得クールタイム (1分・無制限)
+        const DAILY_TICKET_MAX = 5; // 互換
+        const DAILY_BOOST_COIN_MAX = 10; // ブーストコイン1日最大獲得枚数 (10枚)
+        const ITEM_COIN_COOLDOWN_SEC = 45; // アイテムコイン獲得クールタイム (45秒)
+        const TICKET_COOLDOWN_SEC = 45; // 互換
+        const BOOST_COIN_COOLDOWN_SEC = 60; // ブーストコイン獲得クールタイム (1分)
 
         function getPurchaseItemInfo(type) {
             if (!type) return { cost: 1, currency: 'itemCoin' };
@@ -5927,7 +5985,7 @@
             if (type.startsWith('skin:')) return { cost: 2, currency: 'itemCoin' };
             if (type.startsWith('bg:')) return { cost: 2, currency: 'itemCoin' };
             if (type === 'boost:battery8h') return { cost: 1, currency: 'boostCoin' };
-            if (type === 'boost:fever30s') return { cost: 1, currency: 'boostCoin' };
+            if (type === 'boost:fever20s') return { cost: 1, currency: 'boostCoin' };
             if (type === 'boost:goldenSlot') return { cost: 1, currency: 'boostCoin' };
             return { cost: 1, currency: 'itemCoin' };
         }
@@ -6054,7 +6112,7 @@
                 if (btnExecSpeedLbl) btnExecSpeedLbl.textContent = `吸引力を強化する (🪙 ${speedCost}枚)`;
             }
 
-            // 🔋 強力バッテリー UI
+            // 🔋 充電回復（最大8時間） UI
             const curLvlBat = state.lvlRoombaBattery || 1;
             const isBatMax = curLvlBat >= 10;
             const curHours = hoursTable[curLvlBat] || 2;
@@ -6151,10 +6209,21 @@
 
             // ⚡ タブパネル 4: ブーストコイン獲得 UI更新
             const badgeBoostHeld = document.getElementById('upg-boost-tab-held-badge');
+            const txtDailyBoost = document.getElementById('upg-boost-tab-daily-txt');
+            const barDailyBoost = document.getElementById('upg-boost-tab-daily-bar');
             const btnBoostAd = document.getElementById('btn-upg-boost-watch-ad');
             const btnBoostAdLbl = document.getElementById('btn-upg-boost-watch-ad-lbl');
 
             if (badgeBoostHeld) badgeBoostHeld.textContent = `${state.boostCoins || 0}枚`;
+
+            const claimedBoostToday = state.dailyBoostCoinsClaimed || 0;
+            if (txtDailyBoost) {
+                txtDailyBoost.textContent = `${claimedBoostToday} / ${DAILY_BOOST_COIN_MAX}枚`;
+            }
+            if (barDailyBoost) {
+                const boostPct = Math.min(100, Math.floor((claimedBoostToday / DAILY_BOOST_COIN_MAX) * 100));
+                barDailyBoost.style.width = `${boostPct}%`;
+            }
 
             const boostElapsed = (now - (state.lastBoostCoinAdTimestamp || 0)) / 1000;
             const isBoostCooldown = boostElapsed < BOOST_COIN_COOLDOWN_SEC;
@@ -6162,7 +6231,10 @@
 
             let boostBtnText = '動画を見てブーストコイン+1枚 (無料)';
             let boostDisabled = false;
-            if (isBoostCooldown) {
+            if (claimedBoostToday >= DAILY_BOOST_COIN_MAX) {
+                boostBtnText = '本日上限 (10/10枚達成)';
+                boostDisabled = true;
+            } else if (isBoostCooldown) {
                 boostBtnText = `⏳ あと ${remainBoostCd}秒`;
                 boostDisabled = true;
             }
@@ -6256,8 +6328,15 @@
             if (lblShopItemSub) {
                 lblShopItemSub.textContent = `${claimedToday}/${DAILY_ITEM_COIN_MAX}枚`;
             }
+            const claimedBoostToday = state.dailyBoostCoinsClaimed || 0;
             if (lblShopBoostSub) {
-                lblShopBoostSub.textContent = isBoostCooldown ? `あと${remainBoostCd}s` : '無料GET';
+                if (claimedBoostToday >= DAILY_BOOST_COIN_MAX) {
+                    lblShopBoostSub.textContent = '本日上限';
+                } else if (isBoostCooldown) {
+                    lblShopBoostSub.textContent = `待${remainBoostCd}s`;
+                } else {
+                    lblShopBoostSub.textContent = `${claimedBoostToday}/${DAILY_BOOST_COIN_MAX}枚`;
+                }
             }
             if (cardGetTicket) {
                 cardGetTicket.style.opacity = (itemIsDisabled && isBoostCooldown) ? '0.75' : '1';
@@ -6322,12 +6401,20 @@
         }
 
         function watchAdForBoostCoin(callback) {
+            checkDailyCoinReset();
+            const claimedBoostToday = state.dailyBoostCoinsClaimed || 0;
+            if (claimedBoostToday >= DAILY_BOOST_COIN_MAX) {
+                playPopSound("C4");
+                showGameToast(`⚠️ 本日のブーストコイン獲得上限（${DAILY_BOOST_COIN_MAX}枚）に達しました！また明日（朝4時）遊んでね！`);
+                return;
+            }
+
             const now = Date.now();
             const elapsed = (now - (state.lastBoostCoinAdTimestamp || 0)) / 1000;
             if (elapsed < BOOST_COIN_COOLDOWN_SEC) {
                 playPopSound("C4");
                 const remainCd = Math.ceil(BOOST_COIN_COOLDOWN_SEC - elapsed);
-                showGameToast(`⏳ 広告の準備中です... あと ${remainCd} 秒お待ちください`);
+                showGameToast(`⏳ 広告の準備中です... あと ${remainCd} 秒待ってね`);
                 return;
             }
 
@@ -6337,13 +6424,15 @@
                 adName: 'boost_coin_reward_ad',
                 onReward: () => {
                     state.boostCoins = (state.boostCoins || 0) + 1;
+                    state.dailyBoostCoinsClaimed = (state.dailyBoostCoinsClaimed || 0) + 1;
                     state.lastBoostCoinAdTimestamp = Date.now();
                     saveGameDataNow();
                     updateUI();
                     updateCoinUI();
                     playPopSound("C6");
                     setTimeout(() => playPopSound("G6"), 150);
-                    showGameToast(`⚡ ブーストコインを1枚獲得しました！（所持: ${state.boostCoins}枚 / 獲得上限なし！）`);
+                    const remainToday = Math.max(0, DAILY_BOOST_COIN_MAX - state.dailyBoostCoinsClaimed);
+                    showGameToast(`⚡ ブーストコイン1枚獲得！（所持: ${state.boostCoins}枚 / 本日残り: ${remainToday}枚）`);
                     if (typeof callback === 'function') callback();
                 },
                 onDismiss: () => {}
@@ -6356,34 +6445,54 @@
 
         function updateSlotGoldenUI() {
             const goldenSpins = state.goldenSlotSpins || 0;
+            const isPaused = !!state.goldenSlotSpinsPaused;
             const spinsCountEl = document.getElementById('slot-golden-spins-count');
             const barTitle = document.getElementById('slot-golden-status-title');
             const barDesc = document.getElementById('slot-golden-status-desc');
             const actBtn = document.getElementById('btn-activate-golden-slot');
             const actBtnLbl = document.getElementById('btn-golden-slot-label');
+            const cancelBtn = document.getElementById('btn-cancel-golden-slot');
             const frame = document.getElementById('slot-cabinet-frame');
 
             if (spinsCountEl) spinsCountEl.textContent = goldenSpins.toString();
 
             if (goldenSpins > 0) {
-                if (barTitle) barTitle.innerHTML = `<span class="text-amber-300 font-black animate-pulse">👑✨ 黄金の激熱モード発動中！ ✨👑</span>`;
-                if (barDesc) barDesc.innerHTML = `当選確率超UP！ (残り: <b class="text-rose-400 font-black">${goldenSpins}</b>回)`;
-                if (actBtnLbl) actBtnLbl.textContent = '激熱モード中！';
-                if (actBtn) {
-                    actBtn.className = "doodle-button px-2.5 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 font-black text-[9.5px] rounded shadow opacity-90 cursor-default animate-pulse";
-                }
-                if (frame) {
-                    frame.className = "relative bg-gradient-to-b from-amber-950/90 via-stone-950 to-amber-950/90 border-4 border-amber-300 rounded-xl p-3 shadow-inner my-1 flex flex-col items-center ring-4 ring-amber-400/80 shadow-[0_0_35px_rgba(251,191,36,0.85)]";
+                if (isPaused) {
+                    if (barTitle) barTitle.innerHTML = `<span class="text-stone-300 font-bold">⏸️ 激熱一時中断中</span>`;
+                    if (barDesc) barDesc.innerHTML = `通常スピン中 (所持数: <b class="text-amber-400 font-black">${goldenSpins}</b>回)`;
+                    if (actBtnLbl) actBtnLbl.textContent = '👑 激熱を再開！';
+                    if (actBtn) {
+                        actBtn.className = "doodle-button px-2 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-stone-950 font-black text-[9px] rounded shadow cursor-pointer active:scale-95 animate-pulse";
+                    }
+                    if (cancelBtn) cancelBtn.classList.add('hidden');
+                    if (frame) {
+                        frame.className = "relative bg-gradient-to-b from-purple-950 via-stone-900 to-indigo-950 border-4 border-amber-400 rounded-xl p-3 shadow-inner my-1 flex flex-col items-center transition-all duration-300";
+                    }
+                } else {
+                    if (barTitle) barTitle.innerHTML = `<span class="text-yellow-300 font-black animate-pulse">👑✨ 黄金の激熱モード発動中！ ✨👑</span>`;
+                    if (barDesc) barDesc.innerHTML = `当選確率超UP！ (所持数: <b class="text-yellow-300 font-black">${goldenSpins}</b>回)`;
+                    if (actBtnLbl) actBtnLbl.textContent = '激熱モード中！';
+                    if (actBtn) {
+                        actBtn.className = "doodle-button px-2 py-1 bg-amber-400 text-stone-950 font-black text-[9px] rounded shadow opacity-90 cursor-default";
+                    }
+                    if (cancelBtn) {
+                        cancelBtn.classList.remove('hidden');
+                        cancelBtn.textContent = '通常へ一時切替';
+                    }
+                    if (frame) {
+                        frame.className = "relative bg-gradient-to-b from-amber-500 via-yellow-300 to-amber-600 border-4 border-yellow-200 rounded-xl p-3 shadow-[0_0_35px_rgba(251,191,36,0.9)] my-1 flex flex-col items-center ring-4 ring-amber-300 animate-pulse transition-all duration-300";
+                    }
                 }
             } else {
                 if (barTitle) barTitle.textContent = '黄金の激熱モード';
-                if (barDesc) barDesc.innerHTML = `当選確率超UP！ (所持: <b class="text-rose-400">0</b>回)`;
+                if (barDesc) barDesc.innerHTML = `当選確率超UP！ (所持数: <b class="text-rose-400">0</b>回)`;
                 if (actBtnLbl) actBtnLbl.textContent = '🎫 1枚で発動！';
                 if (actBtn) {
                     actBtn.className = "doodle-button px-2.5 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-[9.5px] rounded shadow flex items-center gap-0.5 active:scale-95 cursor-pointer";
                 }
+                if (cancelBtn) cancelBtn.classList.add('hidden');
                 if (frame) {
-                    frame.className = "relative bg-gradient-to-b from-purple-950 via-stone-900 to-indigo-950 border-4 border-amber-400 rounded-xl p-3 shadow-inner my-1 flex flex-col items-center";
+                    frame.className = "relative bg-gradient-to-b from-purple-950 via-stone-900 to-indigo-950 border-4 border-amber-400 rounded-xl p-3 shadow-inner my-1 flex flex-col items-center transition-all duration-300";
                 }
             }
         }
@@ -6417,7 +6526,8 @@
 
             if (heldEl) {
                 if (isBoost) {
-                    heldEl.textContent = `所持: ${heldCoins}枚 (獲得制限なし)`;
+                    const remainToday = Math.max(0, DAILY_BOOST_COIN_MAX - (state.dailyBoostCoinsClaimed || 0));
+                    heldEl.textContent = `所持: ${heldCoins}枚 (本日残り: ${remainToday}枚)`;
                 } else {
                     const remainToday = Math.max(0, DAILY_ITEM_COIN_MAX - (state.dailyItemCoinsClaimed || 0));
                     heldEl.textContent = `所持: ${heldCoins}枚 (本日残り: ${remainToday}枚)`;
@@ -6478,7 +6588,7 @@
                         tierBadge +
                         '・稼働バッテリー時間が <b>' + nextHours + '時間</b> に延長！<br>' +
                         '・アプリを閉じている間の放置効率UP！<br>' +
-                        '・<b>バッテリー切れ時はエコモードで稼働します。</b>';
+                        '・<b>バッテリーが切れると稼働が停止します（充電回復で再開）。</b>';
                 }
             } else if (type && type.startsWith('skin:')) {
                 const skinId = type.split(':')[1];
@@ -6528,7 +6638,7 @@
                 }
             } else if (type === 'boost:battery8h') {
                 if (iconEl) iconEl.textContent = '⚡';
-                if (nameEl) nameEl.textContent = 'キャッチャー8時間超充電';
+                if (nameEl) nameEl.textContent = '充電回復（最大8時間）';
                 if (priceEl) priceEl.textContent = `${cost}枚`;
                 if (descEl) {
                     descEl.innerHTML = `
@@ -6537,14 +6647,14 @@
                         ・就寝前や出勤・通学前の長時間放置プレイに最適です！
                     `;
                 }
-            } else if (type === 'boost:fever30s') {
+            } else if (type === 'boost:fever20s') {
                 if (iconEl) iconEl.textContent = '🎉';
-                if (nameEl) nameEl.textContent = '即時30秒フィーバー発動';
+                if (nameEl) nameEl.textContent = '即時20秒フィーバー発動';
                 if (priceEl) priceEl.textContent = `${cost}枚`;
                 if (descEl) {
                     descEl.innerHTML = `
                         <p class="font-bold text-pink-900 mb-1">【効果・特典】</p>
-                        ・今すぐお部屋が<b>30秒間のフィーバータイム（金吹雪＆超大量出現）</b>に突入します！<br>
+                        ・今すぐお部屋が<b>20秒間のフィーバータイム（金吹雪＆超大量出現）</b>に突入します！<br>
                         ・一気におばけ玉を稼ぎたい時に最適です！
                     `;
                 }
@@ -6582,17 +6692,22 @@
             if (watchAdBtn && watchAdBtnLbl) {
                 const now = Date.now();
                 if (isBoost) {
+                    const claimedBoostToday = state.dailyBoostCoinsClaimed || 0;
                     const elapsed = (now - (state.lastBoostCoinAdTimestamp || 0)) / 1000;
                     const isCooldown = elapsed < BOOST_COIN_COOLDOWN_SEC;
                     const remainCd = Math.max(0, Math.ceil(BOOST_COIN_COOLDOWN_SEC - elapsed));
-                    if (isCooldown) {
+                    if (claimedBoostToday >= DAILY_BOOST_COIN_MAX) {
+                        watchAdBtn.disabled = true;
+                        watchAdBtn.className = "doodle-button w-full py-1.5 bg-stone-300 text-stone-500 font-bold text-[10.5px] rounded shadow cursor-not-allowed opacity-75";
+                        watchAdBtnLbl.textContent = `本日上限 (${DAILY_BOOST_COIN_MAX}/${DAILY_BOOST_COIN_MAX}枚達成)`;
+                    } else if (isCooldown) {
                         watchAdBtn.disabled = true;
                         watchAdBtn.className = "doodle-button w-full py-1.5 bg-stone-300 text-stone-500 font-bold text-[10.5px] rounded shadow cursor-not-allowed opacity-75";
                         watchAdBtnLbl.textContent = `⏳ あと ${remainCd}秒で獲得可能`;
                     } else {
                         watchAdBtn.disabled = false;
                         watchAdBtn.className = "doodle-button w-full py-1.5 bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-black text-[10.5px] rounded shadow flex items-center justify-center gap-1 active:scale-95 cursor-pointer";
-                        watchAdBtnLbl.textContent = "📺 動画を見てブーストコインGET (+1枚)";
+                        watchAdBtnLbl.textContent = "🎬 動画でブーストコインGET (+1枚)";
                     }
                 } else {
                     const claimedToday = state.dailyItemCoinsClaimed !== undefined ? state.dailyItemCoinsClaimed : (state.dailyTicketsClaimed || 0);
@@ -6681,9 +6796,9 @@
                 if (state.lvlRoombaBattery < 10) {
                     state.lvlRoombaBattery++;
                     state.batteryHighPowerLeft = getBatteryDurationSec(state.lvlRoombaBattery);
-                    GameAnalytics.trackPurchase('catcher_battery', `強力バッテリー Lv.${state.lvlRoombaBattery}`);
+                    GameAnalytics.trackPurchase('catcher_battery', `充電回復（最大8時間） Lv.${state.lvlRoombaBattery}`);
                     playPopSound("G6");
-                    showGameToast(`🎉 🔋強力バッテリーが Lv.${state.lvlRoombaBattery} に強化されました！`);
+                    showGameToast(`🎉 🔋充電回復（最大8時間）が Lv.${state.lvlRoombaBattery} に強化されました！`);
                 }
             } else if (pendingPurchaseType && pendingPurchaseType.startsWith('skin:')) {
                 const skinId = pendingPurchaseType.split(':')[1];
@@ -6719,14 +6834,14 @@
                 } else {
                     state.chargedTimeLeft = (state.chargedTimeLeft || 0) + 8 * 3600;
                 }
-                GameAnalytics.trackPurchase('boost_battery8h', '8時間超充電');
+                GameAnalytics.trackPurchase('boost_battery8h', '充電回復（最大8時間）');
                 playPopSound("C6");
                 showGameToast("⚡ キャッチャーが8時間フルパワー充電されました！");
-            } else if (pendingPurchaseType === 'boost:fever30s') {
-                startFeverTime(30);
-                GameAnalytics.trackPurchase('boost_fever30s', '30秒フィーバー');
+            } else if (pendingPurchaseType === 'boost:fever20s') {
+                startFeverTime(20);
+                GameAnalytics.trackPurchase('boost_fever20s', '20秒フィーバー');
                 playPopSound("C6");
-                showGameToast("🎉 30秒フィーバータイムが発動しました！");
+                showGameToast("🎉 20秒フィーバータイムが発動しました！");
             } else if (pendingPurchaseType === 'boost:goldenSlot') {
                 state.goldenSlotSpins = (state.goldenSlotSpins || 0) + 1;
                 GameAnalytics.trackPurchase('boost_golden_slot', '黄金スロット券');
@@ -6866,7 +6981,21 @@
             updateUI(); saveGameDataNow();
         }
 
-        safeAddListener('card-fever', 'click', openFeverConfirm);
+        safeAddListener('card-fever', 'click', () => {
+            initAudio();
+            if ((state.boostCoins || 0) >= 1) {
+                state.boostCoins--;
+                state.feverTimeLeft = Math.max(state.feverTimeLeft, 20);
+                feverStep = 0;
+                GameAnalytics.trackFever('boost_ticket', 20);
+                playPopSound("C6");
+                showGameToast("🔥 ブーストコインを1枚使用！フィーバー20秒発動！");
+                updateUI();
+                saveGameDataNow();
+            } else {
+                openPurchaseConfirm('boost:fever20s');
+            }
+        });
 
         safeAddListener('card-get-ticket', 'click', () => {
             initAudio();
@@ -6902,7 +7031,7 @@
                 return;
             }
             if (state.lvlRoombaBattery >= 10) {
-                showGameToast("強力バッテリーはすでに最大レベル(Lv.10)です！");
+                showGameToast("充電回復（最大8時間）はすでに最大レベル(Lv.10)です！");
                 return;
             }
             openPurchaseConfirm('roomba-battery');
@@ -7039,7 +7168,7 @@
         safeAddListener('btn-watch-ad-charge', 'click', () => {
             initAudio();
             if (state.chargedTimeLeft >= MAX_CHARGE_SECONDS) {
-                showGameToast("これ以上ストックできません（最大3時間まで）");
+                showGameToast("これ以上ストックできません（最大8時間まで）");
                 return;
             }
             const modal = document.getElementById('modal-charge');
@@ -7050,12 +7179,12 @@
 
             AdManager.showRewardAd({
                 rewardType: 'charge',
-                rewardTitle: 'キャッチャーエコ稼働+20分',
+                rewardTitle: '充電回復 +20分',
                 adName: 'battery_charge_20m_ad',
                 onReward: () => {
                     state.chargedTimeLeft = Math.min(MAX_CHARGE_SECONDS, state.chargedTimeLeft + (20 * 60));
                     playPopSound('C6');
-                    showGameToast('🎉 獲得完了！エコ稼働+20分チャージしました！');
+                    showGameToast('🎉 獲得完了！キャッチャー稼働時間を20分充電回復しました！');
                     applyRoombaUIState();
                     saveGameDataNow();
                 },
@@ -7386,18 +7515,18 @@
             state.hasRoomba = true;
             state.batteryHighPowerLeft = getBatteryDurationSec(state.lvlRoombaBattery);
             applyRoombaUIState(); saveGameDataNow();
-            showGameToast("⚡強力バッテリーを満タン回復しました！");
+            showGameToast("⚡充電回復（最大8時間）を満タン回復しました！");
         });
         safeAddListener('dev-btn-drain-battery', 'click', () => {
             state.batteryHighPowerLeft = 0;
             applyRoombaUIState(); saveGameDataNow();
-            showGameToast("🍃エコ巡航(1%)に切り替えました");
+            showGameToast("⚠️キャッチャー稼働停止（バッテリー0）に切り替えました");
         });
         safeAddListener('dev-btn-add-battery-1h', 'click', () => {
             state.hasRoomba = true;
             state.batteryHighPowerLeft = (state.batteryHighPowerLeft || 0) + 3600;
             applyRoombaUIState(); saveGameDataNow();
-            showGameToast("⚡強力バッテリーを+1時間追加しました！");
+            showGameToast("⚡充電回復（最大8時間）を+1時間追加しました！");
         });
 
         safeAddListener('dev-add-charge-1h', 'click', () => {
@@ -7408,7 +7537,7 @@
         safeAddListener('dev-max-charge-3h', 'click', () => {
             state.chargedTimeLeft = MAX_CHARGE_SECONDS;
             applyRoombaUIState(); saveGameDataNow();
-            showGameToast("最大3時間満タンチャージしました！");
+            showGameToast("最大8時間満タンチャージしました！");
         });
         safeAddListener('dev-clear-charge', 'click', () => {
             state.chargedTimeLeft = 0;
@@ -8100,7 +8229,7 @@ function openArcadeModal() {
             }
 
             // 黄金激熱スピン判定
-            const isGoldenSpin = (state.goldenSlotSpins || 0) > 0;
+            const isGoldenSpin = ((state.goldenSlotSpins || 0) > 0) && !state.goldenSlotSpinsPaused;
             if (isGoldenSpin) {
                 state.goldenSlotSpins--;
                 saveGameDataNow();
@@ -8296,10 +8425,27 @@ function openArcadeModal() {
             }, stop3Delay);
         }
 
-        safeAddListener('btn-activate-golden-slot', 'click', () => {
+        safeAddListener('btn-cancel-golden-slot', 'click', () => {
             initAudio();
             if ((state.goldenSlotSpins || 0) > 0) {
-                showGameToast(`👑 すでに黄金モードが有効です！（残り: ${state.goldenSlotSpins}回）`);
+                state.goldenSlotSpinsPaused = true;
+                updateSlotGoldenUI();
+                showGameToast("激熱モードを一時中断しました（所持数は温存されます）");
+            }
+        });
+
+        safeAddListener('btn-activate-golden-slot', 'click', () => {
+            initAudio();
+            if ((state.goldenSlotSpins || 0) > 0 && state.goldenSlotSpinsPaused) {
+                state.goldenSlotSpinsPaused = false;
+                updateSlotGoldenUI();
+                showGameToast("👑 黄金の激熱モードを再開しました！");
+                return;
+            }
+            if ((state.goldenSlotSpins || 0) > 0) return;
+            initAudio();
+            if ((state.goldenSlotSpins || 0) > 0) {
+                showGameToast(`👑 すでに黄金モードが有効です！（所持数: ${state.goldenSlotSpins}回）`);
                 return;
             }
             if ((state.boostCoins || 0) >= 1) {
@@ -8694,10 +8840,18 @@ function openArcadeModal() {
                         g.vx = -g.vx * restitution;
                     }
 
+                    // 静止スリープ（着地状態で微小速度なら完全ゼロ化）
+                    if (g.isLanded) {
+                        if (Math.abs(g.vx) < 0.22 && Math.abs(g.vy) < 0.22) {
+                            g.vx = 0;
+                            g.vy = 0;
+                        }
+                    }
+
                     if (g.y + g.r > dropHeight) {
                         g.y = dropHeight - g.r;
-                        g.vy = -g.vy * restitution;
-                        if (Math.abs(g.vy) < 0.2) g.vy = 0;
+                        if (Math.abs(g.vy) < 0.45) g.vy = 0;
+                        else g.vy = -g.vy * restitution;
                         g.isLanded = true;
                     }
                 }
@@ -8800,12 +8954,15 @@ function openArcadeModal() {
                             // 相対速度
                             const kx = a.vx - b.vx;
                             const ky = a.vy - b.vy;
-                            const p = 2 * (nx * kx + ny * ky) / (1 + 1);
-
-                            a.vx -= p * 0.5 * nx * (1 + restitution);
-                            a.vy -= p * 0.5 * ny * (1 + restitution);
-                            b.vx += p * 0.5 * nx * (1 + restitution);
-                            b.vy += p * 0.5 * ny * (1 + restitution);
+                            const rVel = nx * kx + ny * ky;
+                            if (rVel > 0) { // 接近中のみ反発（離れつつある時は反発しない）
+                                const bounce = rVel > 0.6 ? restitution : 0.0;
+                                const p = 2 * rVel / 2;
+                                a.vx -= p * 0.5 * nx * (1 + bounce);
+                                a.vy -= p * 0.5 * ny * (1 + bounce);
+                                b.vx += p * 0.5 * nx * (1 + bounce);
+                                b.vy += p * 0.5 * ny * (1 + bounce);
+                            }
                         }
                     }
                 }
@@ -9242,10 +9399,11 @@ function openArcadeModal() {
         // 🕳️ ひょっこりおばけ叩き（30秒反射タップゲーム）システム
         // =========================================================
         const WHACK_TARGETS = [
-            { id: 'normal', name: 'すっぴん', icon: '👻', points: 20,  weight: 50, stayMs: 1150, bg: 'bg-white border-stone-700',        pitch: 'E5', isBomb: false },
-            { id: 'cat',    name: 'ねこみみ', icon: '🐱', points: 50,  weight: 25, stayMs: 920,  bg: 'bg-pink-100 border-pink-500',      pitch: 'G5', isBomb: false },
-            { id: 'king',   name: 'キング',   icon: '👑', points: 150, weight: 10, stayMs: 760,  bg: 'bg-amber-200 border-amber-500',    pitch: 'C6', isBomb: false },
-            { id: 'bomb',   name: 'バクダン', icon: '💣', points: -80, weight: 15, stayMs: 1050, bg: 'bg-rose-200 border-rose-600',      pitch: 'C4', isBomb: true  }
+            { id: 'normal',       name: 'すっぴん',   icon: '👻', points: 20,   weight: 45, stayMs: 1150, bg: 'bg-white border-stone-700',        pitch: 'E5', isBomb: false },
+            { id: 'cat',          name: 'ねこみみ',   icon: '🐱', points: 50,   weight: 22, stayMs: 920,  bg: 'bg-pink-100 border-pink-500',      pitch: 'G5', isBomb: false },
+            { id: 'king',         name: 'キング',     icon: '👑', points: 150,  weight: 10, stayMs: 760,  bg: 'bg-amber-200 border-amber-500',    pitch: 'C6', isBomb: false },
+            { id: 'trap_thunder', name: 'ビリビリ',   icon: '⚡', points: -100, weight: 13, stayMs: 820,  bg: 'bg-amber-300 border-yellow-600 shadow-amber-400', pitch: 'C3', isBomb: true  },
+            { id: 'bomb',         name: 'バクダン',   icon: '💣', points: -80,  weight: 10, stayMs: 1050, bg: 'bg-rose-200 border-rose-600',      pitch: 'C4', isBomb: true  }
         ];
 
         let whackScore = 0;
@@ -9348,12 +9506,13 @@ function openArcadeModal() {
             if (overlay) {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
+                overlay.style.pointerEvents = 'auto';
             }
 
             const statusBanner = document.getElementById('whack-status-banner');
             if (statusBanner) {
                 statusBanner.className = "text-sky-800";
-                statusBanner.textContent = "👆 穴から出たおばけを素早くタップ！";
+                statusBanner.textContent = "👆 穴から出たおばけをタップ！(⚠️黄色い⚡ビリビリは減点)";
             }
 
             updateWhackUI();
@@ -9569,6 +9728,10 @@ function openArcadeModal() {
             if (overlay) {
                 overlay.classList.remove('hidden');
                 overlay.classList.add('flex');
+                overlay.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    if (overlay) overlay.style.pointerEvents = 'auto';
+                }, 1500);
             }
 
             GameAnalytics.track('whack_gameover', {
@@ -9666,16 +9829,30 @@ function openArcadeModal() {
                 fishBoatX = fishWidth / 2;
             }
 
+            let isFishDragging = false;
             fishCanvas.onpointerdown = (e) => {
                 if (isFishGameOver) return;
                 initAudio();
-                updateFishBoatFromEvent(e);
-                castFishingHook();
+                if (fishHookState === 'idle') {
+                    isFishDragging = true;
+                    updateFishBoatFromEvent(e);
+                }
             };
             fishCanvas.onpointermove = (e) => {
                 if (isFishGameOver || fishHookState !== 'idle') return;
-                updateFishBoatFromEvent(e);
+                if (isFishDragging) {
+                    updateFishBoatFromEvent(e);
+                }
             };
+            fishCanvas.onpointerup = (e) => {
+                if (isFishGameOver || fishHookState !== 'idle') return;
+                if (isFishDragging) {
+                    isFishDragging = false;
+                    updateFishBoatFromEvent(e);
+                    castFishingHook();
+                }
+            };
+            fishCanvas.onpointercancel = () => { isFishDragging = false; };
         }
 
         function updateFishBoatFromEvent(e) {
@@ -9752,7 +9929,7 @@ function openArcadeModal() {
             }
             const banner = document.getElementById('fish-status-banner');
             if (banner) {
-                banner.innerHTML = `<span>🎣</span> <span><b>海をタップ</b> または <b>下の「針を落とす」ボタン</b>で釣ろう！</span>`;
+                banner.innerHTML = `<span>🎣</span> <span><b>指でスライドして狙いを定め</b>、<b>指を離す</b>か下の<b>「釣る！」ボタン</b>で針を落とそう！</span>`;
             }
 
             if (fishAnimId) cancelAnimationFrame(fishAnimId);
@@ -10316,12 +10493,23 @@ function openArcadeModal() {
                 if (state.hasRoomba) {
                     checkDailyBatteryReset();
 
-                    if (state.roombaActive) {
+                    if (state.roombaActive && state.batteryHighPowerLeft > 0) {
+                        state.batteryHighPowerLeft = Math.max(0, state.batteryHighPowerLeft - dt);
                         if (!cachedFastBatteryTimer) cachedFastBatteryTimer = document.getElementById('fast-battery-timer-txt');
                         if (cachedFastBatteryTimer) {
                             const tt = formatHoursMinutesSeconds(state.batteryHighPowerLeft);
                             if (tt !== lastTimerTxtFast) { lastTimerTxtFast = tt; cachedFastBatteryTimer.textContent = tt; }
                         }
+                        const fastBanner = document.getElementById('fast-battery-banner');
+                        if (fastBanner && fastBanner.classList.contains('hidden')) fastBanner.classList.remove('hidden');
+                        const ecoBanner = document.getElementById('eco-battery-banner');
+                        if (ecoBanner && !ecoBanner.classList.contains('hidden')) ecoBanner.classList.add('hidden');
+                    } else if (state.hasRoomba && state.batteryHighPowerLeft <= 0 && state.chargedTimeLeft <= 0) {
+                        // バッテリー切れ停止
+                        const fastBanner = document.getElementById('fast-battery-banner');
+                        if (fastBanner && !fastBanner.classList.contains('hidden')) fastBanner.classList.add('hidden');
+                        const ecoBanner = document.getElementById('eco-battery-banner');
+                        if (ecoBanner && ecoBanner.classList.contains('hidden')) ecoBanner.classList.remove('hidden');
                     }
                 }
 
@@ -10398,8 +10586,8 @@ function openArcadeModal() {
                     g.el.style.transform = `translate3d(${g.x - 28}px, ${g.y - 28}px, 0) scale(${scaleTotal * stretchX}, ${scaleTotal * stretchY})`;
                 }
 
-                // キャッチャー自動回収
-                const isCatcherActive = (state.hasRoomba && state.roombaActive) || (!state.hasRoomba && state.chargedTimeLeft > 0);
+                // キャッチャー自動回収（バッテリーまたはチャージがある時のみ稼働）
+                const isCatcherActive = (state.hasRoomba && state.roombaActive && (state.batteryHighPowerLeft > 0 || state.chargedTimeLeft > 0)) || (!state.hasRoomba && state.chargedTimeLeft > 0);
                 if (isCatcherActive) {
                     const rb = state.roombaObj;
                     const spdLevel = state.lvlRoombaSpeed;
@@ -11255,9 +11443,16 @@ function openArcadeModal() {
         window.BOOST_COIN_COOLDOWN_SEC = BOOST_COIN_COOLDOWN_SEC;
         window.ITEM_COIN_COOLDOWN_SEC = ITEM_COIN_COOLDOWN_SEC;
         window.DAILY_ITEM_COIN_MAX = DAILY_ITEM_COIN_MAX;
+        window.DAILY_BOOST_COIN_MAX = DAILY_BOOST_COIN_MAX;
         window.__getGameState = () => state;
         window.SLOT_SYMBOLS = SLOT_SYMBOLS;
         window.pickRandomSlotSymbol = pickRandomSlotSymbol;
+        window.updateUI = updateUI;
+        window.updateSlotGoldenUI = updateSlotGoldenUI;
+        window.finishWhackGame = finishWhackGame;
+        window.WHACK_TARGETS = WHACK_TARGETS;
+        window.getFishBoatX = () => fishBoatX;
+        window.getFishHookState = () => fishHookState;
     })();
     </script>
 </body>
